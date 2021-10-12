@@ -26,4 +26,3 @@ The third version (for now) will include a pairing engine that helps connect div
 
 The current version of the website is already accessible at: https://diving-app-eaabe.web.app/
 
-To this date, only the design and structure have been done. No logic is yet present. Do expect a very boring but good-looking website.
