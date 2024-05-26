@@ -1,0 +1,9 @@
+services:
+  server:
+    build:
+      dockerfile: ./Dockerfile
+    image: nginx-server:latest
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+    ports:
+      - '80:80'
