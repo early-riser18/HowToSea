@@ -1,0 +1,13 @@
+FROM python:3.10-bookworm as base
+# Build context expected to be root directory
+
+RUN apt-get -y upgrade && apt-get -y update
+RUN mkdir /app
+WORKDIR /app
+COPY ../requirements.txt .
+RUN pip3 --no-cache-dir install -r requirements.txt
+
+FROM base
+COPY ./location /app
+RUN mkdir -p /var/log/gunicorn && mkdir -p /var/run/gunicorn
+CMD gunicorn --config gunicorn.conf.py api:app
