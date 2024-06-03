@@ -1,65 +1,58 @@
-ALLOWED_SEARCH_PARAMS = ["lat", "lng", "rad", "level"]
-from .db_client import SpotDB
+from db_client import SpotDB
 from bson.objectid import ObjectId
 import logging
+import math
 
-def translate_search_query_for_mongo_db(query_params: dict):
-    """Takes the query provided by the front end and makes it suitable as a db query (either through SQL or else)"""
+RADIUS_TO_COORD_FACTOR = 100
 
-    #Validate arguments
-    if None in [query_params[i] for i in query_params]:
-        raise ValueError("Missing required search argument.")
-    
-    #Create acceptable distance
 
-    #Filter for level
-
-def search_with_geospatial(query_params):
-    #Validate arguments
-    if None in [query_params[i] for i in query_params]:
-        raise ValueError("Missing required search argument.")
-    
+def search_with_geospatial(lat: float, lng: float, rad: int, keywords: dict):
     """
-    Step 0 - filter out objects based on other attributes. 
-    Step 1 - get all objects (id, lat, lng)
-    Step 2 - calculate euclidean distance
-    step 3 - keep only ids with good distance 
-    step 4 - call the DB to get full info for those ids 
+    Currently works for single values level.
     """
-
-    keyword_query = {"level": query_params["level"]}
     db_client = SpotDB.from_env()
-    spots_ObjectsId_filtered_by_keyword =  [ObjectId(item['_id']['$oid']) for item in db_client.search_spots(keyword_query, True)]
-    spots_filtered_by_keyword = [spot for spot in db_client.search_spots({"_id": {"$in": spots_ObjectsId_filtered_by_keyword} }, id_only=False)]
-    print(spots_filtered_by_keyword[0])
+    keyword_query = {"level": {"$in": keywords["level"]}}
+    spots_filtered_by_keyword = [spot for spot in db_client.search_spots(keyword_query)]
+
     spots_within_distance = []
     for spot in spots_filtered_by_keyword:
-        
-        print(calculate_euclidean_distance(float(spot["latitude"]), float(spot["longitude"]), 42, 6))
+        if is_spot_within_distance(spot=spot, lat=lat, lng=lng, rad=rad):
+            spots_within_distance.append(spot)
+
+    return spots_within_distance
 
 
-def calculate_euclidean_distance(lat_x: float, lng_x: float, lat_y: float, lng_y: float) -> float:
-    return  (lat_x - lat_y) / (lng_x - lng_y)
-    
+def is_spot_within_distance(spot: dict, lat: float, lng: float, rad: int) -> bool:
+    """Encapsulates logic to determine if valid distance from center"""
+    ecl_dist = calculate_euclidean_distance(
+        float(spot["latitude"]),  # needs refactoring in DB
+        float(spot["longitude"]),  # needs refactoring in DB
+        lat,
+        lng,
+    )
+    return True if ecl_dist <= rad / RADIUS_TO_COORD_FACTOR else False
 
 
-#TODO
-#TEST normal loop vs using numpy 
+def calculate_euclidean_distance(
+    lat_x: float, lng_x: float, lat_y: float, lng_y: float
+) -> float:
+    lat_vector = (lat_x - lat_y) ** 2
+    lng_vector = (lng_x - lng_y) ** 2
+    return math.sqrt(lat_vector + lng_vector)
+
+
+# TODO
+# TEST normal loop vs using numpy
 
 
 if __name__ == "__main__":
-    ref = (10, 15)
+    ref = (42, 7)
     test1 = (3, 7)
     test2 = (12, 8)
 
-    
-    print(calculate_euclidean_distance(ref[0], ref[1], test1[0], test1[1]))
-    print(calculate_euclidean_distance(ref[0], ref[1], test2[0], test2[1]))
-
-    test_query_params = {
-        "lat": ref[0],
-        "lng": ref[1],
-        "rad": 10,
-        "level": "hard"
-    }
-    print(search_with_geospatial(test_query_params))
+    test_query_params = {"lat": ref[0], "lng": "s", "rad": 100, "level": "hard"}
+    print(
+        search_with_geospatial(
+            lat=ref[0], lng="s", rad=100, keywords={"level": ["hard"]}
+        )
+    )

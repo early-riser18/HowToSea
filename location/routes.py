@@ -1,8 +1,9 @@
-from flask import Flask, jsonify, request, make_response, Response
-from db_client import SpotDB
-from search import ALLOWED_SEARCH_PARAMS, translate_search_query_for_mongo_db
-import logging
 import json
+from flask import Flask, request
+from jsonschema import validate, ValidationError
+from db_client import SpotDB
+from search import search_with_geospatial
+from utils import SEARCH_PARAMS_TYPE, typecast_query_params, create_jsonapi_response
 
 app = Flask(__name__)
 
@@ -83,16 +84,36 @@ def delete_spot(spot_id):
 
 @app.route("/search", methods=["GET"])
 def search():
+    # Extract query params
     query_params = {}
-    for param in ALLOWED_SEARCH_PARAMS:
-        query_params[param] = request.args.get(param)
-        app.logger.debug(query_params[param])
     try:
-        query_filter = translate_search_query_for_mongo_db(query_params)
-    except ValueError as e:
-        return create_jsonapi_response(400, message=str(e))
-    return create_jsonapi_response(200, query_params)
+        query_params["lat"] = request.args["lat"]
+        query_params["lng"] = request.args["lng"]
+        query_params["rad"] = request.args["rad"]
+        query_params["level"] = request.args.getlist("level")
+    except KeyError as e:
+        return create_jsonapi_response(
+            400, message="Invalid query parameters provided."
+        )
 
+    app.logger.debug("Extracted query params: %s", query_params)
+
+    try:
+        # Validation
+        query_params = typecast_query_params(query_params, SEARCH_PARAMS_TYPE)
+        validate(query_params, SEARCH_SPOT_SCHEMA)
+        # Search
+        search_res = search_with_geospatial(
+            lat=query_params["lat"],
+            lng=query_params["lng"],
+            rad=query_params["rad"],
+            keywords={"level": query_params["level"]},
+        )
+    except (ValueError, KeyError, ValidationError) as e:
+        app.logger.debug(f"Error: {str(e)}", exc_info=True)
+        return create_jsonapi_response(400)
+
+    return create_jsonapi_response(200, search_res)
 
 
 @app.route("/test")
