@@ -1,2 +1,4 @@
 Flask
 gunicorn~=22.0
+pymongo[srv]
+jsonschema~=4.22
