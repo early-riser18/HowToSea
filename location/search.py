@@ -41,9 +41,5 @@ def calculate_euclidean_distance(
     return math.sqrt(lat_vector + lng_vector)
 
 
-# TODO
-# TEST normal loop vs using numpy
-
-
 if __name__ == "__main__":
     pass
