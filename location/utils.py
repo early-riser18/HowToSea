@@ -72,10 +72,4 @@ def create_jsonapi_response(
 
 
 if __name__ == "__main__":
-    good_user_input = {"lat": 32, "lng": 22, "rad": -1, "level": "easy"}
-    none_user_input = {"lat": None, "lng": None, "rad": None, "level": None}
-    missing_key_user_input = {"lat": 32, "rad": -1, "level": "easy"}
-    unexpected_key_user_input = {"lat": 32, "bad_key": 22, "rad": -1, "level": "easy"}
-    wrong_type_user_input = {"lat": 1, "lng": 22.2, "rad": -1, "level": "easy"}
-
-    print(typecast_query_params(wrong_type_user_input, SEARCH_PARAMS_TYPE))
+    pass

@@ -46,13 +46,4 @@ def calculate_euclidean_distance(
 
 
 if __name__ == "__main__":
-    ref = (42, 7)
-    test1 = (3, 7)
-    test2 = (12, 8)
-
-    test_query_params = {"lat": ref[0], "lng": "s", "rad": 100, "level": "hard"}
-    print(
-        search_with_geospatial(
-            lat=ref[0], lng="s", rad=100, keywords={"level": ["hard"]}
-        )
-    )
+    pass

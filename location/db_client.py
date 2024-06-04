@@ -44,7 +44,4 @@ class SpotDB(MongoDB):
 
 
 if __name__ == "__main__":
-    db = SpotDB.from_env()
-    print(db.client)
-    print(db.get_spots(["6654412a4efc40df8ac4e08", "6654888f4b9811626fc5912a"]))
-    # retrieve_from_db("66544712a4efc40df8ac4e08")
+    pass
