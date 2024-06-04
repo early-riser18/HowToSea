@@ -70,24 +70,28 @@ def delete_spot(spot_id):
 @app.route("/search", methods=["GET"])
 def search():
 
-    # Extract query params
+    # Prepare Input
     query_params = {}
     try:
+        # Extract query params
         query_params["lat"] = request.args["lat"]
         query_params["lng"] = request.args["lng"]
         query_params["rad"] = request.args["rad"]
         query_params["level"] = request.args.getlist("level")
-    except KeyError as e:
-        return create_jsonapi_response(
-            400, message="Invalid query parameters provided."
-        )
+
+        # Validate
+        app.logger.debug(f"Now calling typecast", exc_info=True)
+
+        query_params = typecast_query_params(query_params, SEARCH_PARAMS_TYPE)
+        validate(query_params, SEARCH_SPOT_SCHEMA)
+
+    except (ValueError, KeyError, ValidationError) as e:
+        app.logger.debug(f"Error: {str(e)}", exc_info=True)
+        return create_jsonapi_response(400)
 
     app.logger.debug("Extracted query params: %s", query_params)
 
     try:
-        # Validation
-        query_params = typecast_query_params(query_params, SEARCH_PARAMS_TYPE)
-        validate(query_params, SEARCH_SPOT_SCHEMA)
         # Search
         search_res = search_with_geospatial(
             lat=query_params["lat"],
@@ -95,8 +99,7 @@ def search():
             rad=query_params["rad"],
             keywords={"level": query_params["level"]},
         )
-    except (ValueError, KeyError, ValidationError) as e:
-        app.logger.debug(f"Error: {str(e)}", exc_info=True)
+    except ValueError as e:
         return create_jsonapi_response(400)
 
     return create_jsonapi_response(200, search_res)
