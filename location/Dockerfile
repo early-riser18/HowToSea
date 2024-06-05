@@ -4,7 +4,7 @@ ARG workdir=location
 RUN apt-get -y upgrade && apt-get -y update
 RUN mkdir /${workdir}
 WORKDIR /${workdir}
-COPY ../requirements.txt .
+COPY requirements.txt .
 RUN pip3 --no-cache-dir install -r requirements.txt
 
 FROM base
