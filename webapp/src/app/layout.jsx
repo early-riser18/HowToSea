@@ -16,9 +16,7 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body
-        className={"flex flex-col justify-center bg-slate-50" + inter.className}
-      >
+      <body className={"flex justify-center bg-slate-50" + inter.className}>
         <div className="w-full bg-white 2xl:max-w-screen-2xl">
           <Header />
           {children}

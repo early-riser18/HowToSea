@@ -3,13 +3,15 @@ import Link from "next/link";
 export default function Header() {
   return (
     <>
-      <div className=" bg-white  xl:px-20 md:px-10 px-1 py-1 shadow-sm mb-10 ">
+      <div className="mb-10 bg-white px-1 py-1 shadow-sm md:px-10 xl:px-20">
         <Link
-          className=" basis-full flex md:justify-start justify-center items-center"
+          className="flex basis-full items-center justify-center md:justify-start"
           href="/"
         >
           <img className="w-10" src="logo.png" />
-          <p className="text-primary ml-4 font-bold text-2xl">How To Sea</p>
+          <p className="ml-4 font-header text-2xl font-bold text-primary">
+            How To Sea
+          </p>
         </Link>
       </div>
     </>

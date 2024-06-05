@@ -5,8 +5,8 @@ export default function HomePage() {
   return (
     <>
       <div className="px-5 md:px-10 xl:px-20">
-        <div className="my-8 text-center">
-          <h1 className="my-4 font-header text-3xl font-bold text-primary md:text-4xl">
+        <div className="my-10 text-center">
+          <h1 className="my-4 font-header text-3xl text-primary md:text-4xl">
             DÉCOUVRE TON NOUVEAU SPOT DE PLONGÉE PRÉFÉRÉ
           </h1>
           <p className="font-main text-lg font-medium md:text-xl">

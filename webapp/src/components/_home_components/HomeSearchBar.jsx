@@ -5,7 +5,7 @@ export default function HomeSearchBar() {
   return (
     <>
       <div
-        className="-mx-5 my-8 flex h-72 items-center justify-center bg-home_search bg-cover bg-center md:-mx-10 xl:-mx-20"
+        className="-mx-5 my-8 flex h-80 items-center justify-center bg-home_search bg-cover bg-center md:-mx-10 xl:-mx-20"
         id="wrapper"
       >
         <form
@@ -27,7 +27,7 @@ export default function HomeSearchBar() {
               </select>
             }
           />
-          <div className="bg-search-gradient my-2 flex justify-center rounded-xl px-5 py-3 text-white md:mr-2 md:rounded-lg">
+          <div className="my-2 flex justify-center rounded-xl bg-search-gradient px-5 py-3 text-white md:mr-2 md:rounded-lg">
             <button>
               <FontAwesomeIcon className="pr-2" icon={faMagnifyingGlass} />
               Rechercher
