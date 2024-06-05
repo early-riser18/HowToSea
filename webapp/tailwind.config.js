@@ -7,11 +7,22 @@ module.exports = {
   ],
   theme: {
     extend: {
-      backgroundImage: {
-        "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
-        "gradient-conic":
-          "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
+      colors: {
+        primary: "#0091ff",
       },
+      boxShadow: {
+        header: "1px 1px 6px #eee",
+      },
+      fontFamily: {
+        header: ["TommySoft", "Arial", "Helvetica"],
+        main: ["Quicksand", "Verdsana", "Tahoma"],
+      },
+    },
+    backgroundImage: {
+      home_search:
+        "linear-gradient(180deg, rgba(143, 170, 220, .05), rgba(47, 85, 151, .29) 38%), url('/search-bar-bg.jpg')",
+      "search-gradient":
+        "linear-gradient(58deg, #0091ff 22%, #30d5ff 80%, #a9f8ff)",
     },
   },
   plugins: [],
