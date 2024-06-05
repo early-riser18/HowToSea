@@ -6,3 +6,4 @@
 # How to unit test
 
 1. source .env #make sure to create one
+2. run `python3 -m unittest discover -s test -p "*_test.py"`
