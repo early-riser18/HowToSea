@@ -4,6 +4,7 @@ import Header from "@/components/Header";
 const inter = Inter({ subsets: ["latin"] });
 import "@fortawesome/fontawesome-svg-core/styles.css";
 import { config } from "@fortawesome/fontawesome-svg-core";
+import Footer from "@/components/Footer";
 config.autoAddCss = false;
 
 export const metadata = {
@@ -21,6 +22,7 @@ export default function RootLayout({ children }) {
         <div className="w-full bg-white 2xl:max-w-screen-2xl">
           <Header />
           {children}
+          <Footer />
         </div>
       </body>
     </html>
