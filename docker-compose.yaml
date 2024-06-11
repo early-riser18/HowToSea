@@ -11,10 +11,13 @@ services:
 
   location:
     build:
-      dockerfile: ./location/Dockerfile
+      context: ./location
+      dockerfile: Dockerfile
     image: how-to-sea-location
     environment:
       - MONGODB_PW=${MONGODB_PW}
       - MONGODB_USER=${MONGODB_USER}
+      - DB_NAME=${DB_NAME}
     volumes:
     - ./location:/location
+
