@@ -6,6 +6,7 @@ import math
 RADIUS_TO_COORD_FACTOR = 100
 
 
+### MAIN
 def search_with_geospatial(lat: float, lng: float, rad: int, keywords: dict):
     """
     Currently works for single values level.
@@ -22,6 +23,7 @@ def search_with_geospatial(lat: float, lng: float, rad: int, keywords: dict):
     return spots_within_distance
 
 
+### UTILS
 def is_spot_within_distance(spot: dict, lat: float, lng: float, rad: int) -> bool:
     """Encapsulates logic to determine if valid distance from center"""
     ecl_dist = calculate_euclidean_distance(

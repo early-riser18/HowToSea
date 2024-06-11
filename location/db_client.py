@@ -39,7 +39,7 @@ class SpotDB(MongoDB):
         )
         return [json.loads(json_util.dumps(spot)) for spot in cursor_result]
 
-    def search_spots(self, filter):
+    def search_spots(self, filter: str):
         """Thin wrapper around MongoDB.find()"""
         cursor_result = self.database[self.collection_id].find(filter)
 

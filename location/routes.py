@@ -11,20 +11,20 @@ app = Flask(__name__)
 spot_db = SpotDB.from_env()
 
 
-@app.errorhandler(Exception)
-def catch_all_exception(e):
-    app.logger.error(f"Unexpected error: {str(e)}", exc_info=True)
-    return create_jsonapi_response(
-        500, message="Unable to handle this request at the moment."
-    )
-
-
 # Load Schemas
 with open("./schema/search_spot.json") as schema_f:
     SEARCH_SPOT_SCHEMA = json.load(schema_f)
 
 # Configure logging
 app.logger.setLevel("DEBUG")
+
+
+@app.errorhandler(Exception)
+def catch_all_exception(e):
+    app.logger.error(f"Unexpected error: {str(e)}", exc_info=True)
+    return create_jsonapi_response(
+        500, message="Unable to handle this request at the moment."
+    )
 
 
 @app.before_request
@@ -42,7 +42,7 @@ def hello_world():
 def get_spot(spot_id):
     try:
         res = spot_db.get_spots([spot_id])
-        app.logger.infko(res)
+        app.logger.info(res)
     except ValueError as e:
         app.logger.error(e, exc_info=True)
         return create_jsonapi_response(400, content=str(e))
