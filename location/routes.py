@@ -2,11 +2,13 @@ import json
 from flask import Flask, request
 from jsonschema import validate, ValidationError
 from db_client import SpotDB
-from search import search_with_geospatial
+from search import search_with_geospatial, get_recommended_spots
 from utils import SEARCH_PARAMS_TYPE, typecast_query_params, create_jsonapi_response
+from flask_cors import CORS
+
 
 app = Flask(__name__)
-
+CORS(app)
 # Instantiate DB connection
 spot_db = SpotDB.from_env()
 
@@ -38,7 +40,7 @@ def hello_world():
     return create_jsonapi_response(200)
 
 
-@app.route("/<string:spot_id>", methods=["GET"])
+@app.route("/id/<string:spot_id>", methods=["GET"])
 def get_spot(spot_id):
     try:
         res = spot_db.get_spots([spot_id])
@@ -103,6 +105,11 @@ def search():
         return create_jsonapi_response(400)
 
     return create_jsonapi_response(200, search_res)
+
+
+@app.route("/rec", methods=["GET"])
+def get_recommendation():
+    return create_jsonapi_response(200, get_recommended_spots())
 
 
 @app.route("/test")
