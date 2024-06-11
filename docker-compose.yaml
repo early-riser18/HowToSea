@@ -1,10 +1,11 @@
 services:
   server:
     build:
-      dockerfile: ./Dockerfile
+      context: ./nginx
+      dockerfile: Dockerfile
     image: nginx-server:latest
     volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
       - ./webapp/out:/usr/share/nginx/html
     ports:
       - '80:80'
