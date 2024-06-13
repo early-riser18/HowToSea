@@ -1,12 +1,15 @@
+# This compose file is for local development only
 services:
-  server:
+  nginx-proxy:
     build:
       context: ./nginx
       dockerfile: Dockerfile
     image: nginx-server:latest
+    environment:
+      - DNS_ADDRESS=127.0.0.11
+      - LOCATION_HOSTNAME=location
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf
-      - ./webapp/out:/usr/share/nginx/html
     ports:
       - '80:80'
 
