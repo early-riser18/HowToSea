@@ -1,22 +1,16 @@
 import json
 from flask import Flask, request
 from jsonschema import validate, ValidationError
-from db_client import SpotDB
-from search import search_with_geospatial
-from utils import SEARCH_PARAMS_TYPE, typecast_query_params, create_jsonapi_response
+from src.db_client import SpotDB
+from src.search import search_with_geospatial, get_recommended_spots
+from src.utils import SEARCH_PARAMS_TYPE, typecast_query_params, create_jsonapi_response
+from flask_cors import CORS
+
 
 app = Flask(__name__)
-
+CORS(app)
 # Instantiate DB connection
 spot_db = SpotDB.from_env()
-
-
-@app.errorhandler(Exception)
-def catch_all_exception(e):
-    app.logger.error(f"Unexpected error: {str(e)}", exc_info=True)
-    return create_jsonapi_response(
-        500, message="Unable to handle this request at the moment."
-    )
 
 
 # Load Schemas
@@ -25,6 +19,14 @@ with open("./schema/search_spot.json") as schema_f:
 
 # Configure logging
 app.logger.setLevel("DEBUG")
+
+
+@app.errorhandler(Exception)
+def catch_all_exception(e):
+    app.logger.error(f"Unexpected error: {str(e)}", exc_info=True)
+    return create_jsonapi_response(
+        500, message="Unable to handle this request at the moment."
+    )
 
 
 @app.before_request
@@ -38,11 +40,11 @@ def hello_world():
     return create_jsonapi_response(200)
 
 
-@app.route("/<string:spot_id>", methods=["GET"])
+@app.route("/id/<string:spot_id>", methods=["GET"])
 def get_spot(spot_id):
     try:
         res = spot_db.get_spots([spot_id])
-        app.logger.infko(res)
+        app.logger.info(res)
     except ValueError as e:
         app.logger.error(e, exc_info=True)
         return create_jsonapi_response(400, content=str(e))
@@ -105,6 +107,15 @@ def search():
     return create_jsonapi_response(200, search_res)
 
 
+@app.route("/rec", methods=["GET"])
+def get_recommendation():
+    return create_jsonapi_response(200, get_recommended_spots())
+
+
 @app.route("/test")
 def test():
     raise ValueError
+
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port="8000", debug=True)

@@ -1,8 +1,8 @@
 import json
 import unittest
 from unittest.mock import patch
-from routes import app
-from utils import SEARCH_PARAMS_TYPE
+from app import app
+from src.utils import SEARCH_PARAMS_TYPE
 
 
 class SearchUnitTestCase(unittest.TestCase):

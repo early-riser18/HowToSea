@@ -1,5 +1,5 @@
 import unittest
-import utils
+import src.utils as utils
 
 
 class TypecastQueryParamsTestCases(unittest.TestCase):
