@@ -1,6 +1,6 @@
 import unittest
 from unittest.mock import patch
-from search import search_with_geospatial, SpotDB
+from src.search import search_with_geospatial, SpotDB
 
 from test import mock_db
 

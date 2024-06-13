@@ -1,9 +1,9 @@
 import json
 from flask import Flask, request
 from jsonschema import validate, ValidationError
-from db_client import SpotDB
-from search import search_with_geospatial, get_recommended_spots
-from utils import SEARCH_PARAMS_TYPE, typecast_query_params, create_jsonapi_response
+from src.db_client import SpotDB
+from src.search import search_with_geospatial, get_recommended_spots
+from src.utils import SEARCH_PARAMS_TYPE, typecast_query_params, create_jsonapi_response
 from flask_cors import CORS
 
 
@@ -115,3 +115,7 @@ def get_recommendation():
 @app.route("/test")
 def test():
     raise ValueError
+
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port="8000", debug=True)

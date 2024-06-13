@@ -24,7 +24,7 @@ class MongoDB:
         return cls(
             user=os.environ["MONGODB_USER"],
             pw=os.environ["MONGODB_PW"],
-            db_name=os.environ["DB_NAME"],
+            db_name=os.environ["MONGODB_DB"],
             **kwargs,
         )
 
