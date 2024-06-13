@@ -24,7 +24,7 @@ export default function Footer({ user }) {
         </ul>
 
         <ul className="p-4">
-          <li className="hover:underline">Conditions d'utilisation</li>
+          <li className="hover:underline">Conditions d&apos;utilisation</li>
           <li className="hover:underline">Politique de confidentialité</li>
           <li className="hover:underline">Reporter un problème</li>
           <li className="hover:underline">Changer de langue</li>

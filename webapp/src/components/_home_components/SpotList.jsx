@@ -35,7 +35,7 @@ export default function SpotList() {
       </h2>
       <div className="mb-20 flex flex-wrap justify-around">
         {spotsData.map((spot) => (
-          <SpotMiniature spot={spot} />
+          <SpotMiniature key={spot.id} spot={spot} />
         ))}
       </div>
     </div>

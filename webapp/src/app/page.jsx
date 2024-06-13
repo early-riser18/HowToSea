@@ -10,7 +10,7 @@ export default function HomePage() {
             DÉCOUVRE TON NOUVEAU SPOT DE PLONGÉE PRÉFÉRÉ
           </h1>
           <p className="font-main text-lg font-medium md:text-xl">
-            How-To-Sea est l'unique site collaboratif de partage de spot de
+            How-To-Sea est l&apos;unique site collaboratif de partage de spot de
             plongée en France et dans les septs mers du Globe.
           </p>
         </div>
