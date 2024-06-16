@@ -9,7 +9,7 @@ services:
       - DNS_ADDRESS=127.0.0.11
       - LOCATION_HOSTNAME=location
     volumes:
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.template
     ports:
       - '80:80'
 
