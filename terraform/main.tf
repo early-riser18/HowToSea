@@ -97,14 +97,15 @@ resource "aws_cloudwatch_log_group" "ecs" {
   retention_in_days = 7 # Adjust retention as needed
 }
 
-resource "aws_ecs_task_definition" "nginx-proxy" {
+resource "aws_ecs_task_definition" "nginx_proxy" {
   family                   = "${var.project_name}-nginx-proxy-${var.env}"
-  network_mode             = "awsvpc"
-  requires_compatibilities = ["FARGATE"]
+  network_mode             = "host"
+  requires_compatibilities = ["EC2"]
   cpu                      = "256"
   memory                   = "512"
 
   execution_role_arn = aws_iam_role.ecs_execution_role.arn
+
   container_definitions = jsonencode([
     {
       name      = "${var.project_name}-nginx-proxy-${var.env}"
@@ -140,7 +141,6 @@ resource "aws_ecs_task_definition" "nginx-proxy" {
     ]
   )
 }
-
 resource "aws_ecs_task_definition" "location" {
   family                   = "${var.project_name}-location-${var.env}"
   network_mode             = "awsvpc"
@@ -164,14 +164,6 @@ resource "aws_ecs_task_definition" "location" {
         },
         { name  = "MONGODB_DB"
           value = var.MONGODB_LOCATION_DB
-        }
-      ]
-
-      portMappings = [
-        {
-          containerPort = 8000
-          hostPort      = 8000
-          protocol      = "tcp"
         }
       ]
 
@@ -243,6 +235,27 @@ resource "aws_security_group" "ecs_security_group" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
+  ingress {
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    from_port   = 8000
+    to_port     = 8000
+    protocol    = "tcp"
+    cidr_blocks = ["10.0.0.0/16"]
+  }
+
+  ingress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
   egress {
     from_port   = 0
     to_port     = 0
@@ -254,27 +267,6 @@ resource "aws_security_group" "ecs_security_group" {
     Name = "${var.project_name}-ecs-security-group-${var.env}"
   }
 }
-
-
-
-
-# resource "aws_ecs_service" "wsgi_service" {
-#   name            = "wsgi-service"
-#   cluster         = aws_ecs_cluster.video_gpt_prod.id
-#   task_definition = aws_ecs_task_definition.wsgi_server.arn
-#   launch_type     = "FARGATE"
-
-#   network_configuration {
-#     subnets          = [aws_subnet.ecs_public_subnet_prod.id]
-#     security_groups  = [aws_security_group.ecs_security_group.id]
-#     assign_public_ip = true
-#   }
-
-#   desired_count = 1
-# }
-
-
-
 
 ########################################################
 #                       AWS DNS                        #
@@ -293,15 +285,14 @@ resource "aws_service_discovery_service" "nginx_proxy" {
     namespace_id = aws_service_discovery_private_dns_namespace.main.id
 
     dns_records {
-      ttl  = 10
-      type = "A"
+      ttl  = 15
+      type = "SRV"
     }
   }
   health_check_custom_config {
     failure_threshold = 1
   }
 }
-
 
 resource "aws_service_discovery_service" "location" {
   name        = "${var.project_name}-location-${var.env}"
@@ -311,7 +302,7 @@ resource "aws_service_discovery_service" "location" {
     namespace_id = aws_service_discovery_private_dns_namespace.main.id
 
     dns_records {
-      ttl  = 10
+      ttl  = 15
       type = "A"
     }
   }
