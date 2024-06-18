@@ -18,7 +18,9 @@ services:
     environment:
       - MONGODB_PW=${MONGODB_PW}
       - MONGODB_USER=${MONGODB_USER}
-      - DB_NAME=${DB_NAME}
+      - MONGODB_DB=${MONGODB_DB}
     volumes:
-    - ./location:/location
-
+    - ./location:/app_dev
+    ports:
+      - '8888:8000'
+    command: ["gunicorn", "--config", "/app_dev/gunicorn.conf.py", "app:app"]
