@@ -1,0 +1,106 @@
+{
+  "$jsonSchema": {
+    "bsonType": "object",
+    "title": "Spot",
+    "description": "A diving spot",
+    "required": [
+      "author_id",
+      "title",
+      "dateCreated",
+      "description",
+      "latitude",
+      "longitude",
+      "level",
+      "image",
+      "address"
+    ],
+    "properties": {
+      "author_id": {
+        "bsonType": "string"
+      },
+      "title": {
+        "bsonType": "string",
+        "description": "Title of the diving spot"
+      },
+      "dateCreated": {
+        "bsonType": "string",
+        "description": "Date when the description was created"
+      },
+      "description": {
+        "bsonType": "string",
+        "description": "Detailed description of the diving spot"
+      },
+      "image": {
+        "bsonType": "array",
+        "items": {
+          "bsonType": "string"
+        },
+        "description": "Array of URL to the image of the diving spot"
+      },
+      "isPublished": {
+        "bsonType": "bool",
+        "description": "Publication status of the diving spot"
+      },
+      "characteristics": {
+        "bsonType": "object",
+        "properties": {
+          "additionalProperties": {
+            "bsonType": "string"
+          }
+        },
+        "description": "Characteristics of the diving spot"
+      },
+      "updateTs": {
+        "bsonType": "string",
+        "description": "Date when the location was last updated"
+      },
+      "latitude": {
+        "bsonType": "double",
+        "description": "Latitude of the diving spot"
+      },
+      "longitude": {
+        "bsonType": "double",
+        "description": "Longitude of the diving spot"
+      },
+      "level": {
+        "bsonType": "string",
+        "description": "Difficulty level of the diving spot"
+      },
+      "parking": {
+        "bsonType": "string",
+        "description": "Parking instructions near the diving spot"
+      },
+      "access_instructions": {
+        "bsonType": "string",
+        "description": "Instructions on how to access the diving location."
+      },
+      "address": {
+        "bsonType": "object",
+        "required": [
+          "street",
+          "postalCode",
+          "city",
+          "country"
+        ],
+        "properties": {
+          "street": {
+            "bsonType": "string",
+            "description": "Street address of the diving spot"
+          },
+          "postalCode": {
+            "bsonType": "string",
+            "description": "Postal code of the diving spot"
+          },
+          "city": {
+            "bsonType": "string",
+            "description": "City where the diving spot is located"
+          },
+          "country": {
+            "bsonType": "string",
+            "description": "Country where the diving spot is located"
+          }
+        }
+      }
+    }
+  }
+}

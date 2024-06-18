@@ -1,12 +1,22 @@
-/* @tailwind base;
+@tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+body {
+  overflow-x: hidden;
+}
 
-
-
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
+@layer base {
+  @font-face {
+    font-family: "TommySoft";
+    font-style: normal;
+    font-weight: 400;
+    src: url("/tommy_soft_medium.otf") format("opentype");
   }
-} */
+  @font-face {
+    font-family: "Quicksand";
+    font-style: normal;
+    font-display: swap;
+    src: url("/Quicksand-VariableFont_wght.ttf") format("truetype");
+  }
+}

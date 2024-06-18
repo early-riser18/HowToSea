@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "search_spot",
+  "title": "Spot Search Query",
+  "description": "A query to search for a diving spot.",
+  "type": "object",
+  "properties": {
+    "lat": {
+      "type": "number",
+      "description": "Latitude of the center of the area requested.",
+      "minimum": -90,
+      "maximum": 90
+    },
+    "lng": {
+      "type": "number",
+      "description": "Longitude of the center of the area requested.",
+      "minimum": -90,
+      "maximum": 90
+    },
+    "rad": {
+      "type": "integer",
+      "description": "Search radius around the search point, in kilometers",
+      "minimum": 0,
+      "maximum": 1000
+    },
+    "level": {
+      "type": "array",
+      "description": "Difficult level of the spot",
+      "items": {
+        "type": "string",
+        "enum": ["easy", "medium", "hard"]
+      }
+    }
+  },
+  "required": ["lat", "lng", "rad"]
+}
