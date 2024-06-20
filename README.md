@@ -4,6 +4,8 @@ _This project is both a portfolio project and an app intended for real user._
 
 How To Sea is a collaborative website to find and share about diving spots around the world. Users post their own spots and can browse through a user-generated catalog of spots.
 
+**Check it out at** [how-to-sea.xyz](https://how-to-sea.xyz/)
+
 ## Technical introduction
 
 This project is made of a Single-Page Application built with Next.js for the Front-End, and of a Back-End comprised of multiple scalale micro-services placed behind a NGINX reverse-proxy.
