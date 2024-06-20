@@ -14,7 +14,7 @@ resource "aws_ecs_service" "location" {
   service_registries {
     registry_arn = aws_service_discovery_service.location.arn
   }
-  desired_count = 1
+  desired_count = 0
 }
 
 
@@ -27,8 +27,9 @@ resource "aws_ecs_service" "nginx_proxy_ec2" {
   service_registries {
     registry_arn   = aws_service_discovery_service.nginx_proxy.arn
     container_name = "${var.project_name}-nginx-proxy-${var.env}"
-    container_port = 80
+    container_port = 443
   }
+
   desired_count = 1
 }
 
