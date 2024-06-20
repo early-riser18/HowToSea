@@ -126,6 +126,17 @@ resource "aws_ecs_task_definition" "nginx_proxy" {
           containerPort = 80
           hostPort      = 80
           protocol      = "tcp"
+        },
+        {
+          containerPort = 443
+          hostPort      = 443
+          protocol      = "tcp"
+        }
+      ]
+
+      mountPoints = [
+        { containerPath = "/etc/letsencrypt"
+          sourceVolume  = "nginx-letsencrypt"
         }
       ]
 
@@ -138,8 +149,15 @@ resource "aws_ecs_task_definition" "nginx_proxy" {
         }
       }
     }
-    ]
-  )
+  ])
+  volume {
+    name = "nginx-letsencrypt"
+    docker_volume_configuration {
+      driver        = "local"
+      scope         = "shared"
+      autoprovision = "true"
+    }
+  }
 }
 resource "aws_ecs_task_definition" "location" {
   family                   = "${var.project_name}-location-${var.env}"
