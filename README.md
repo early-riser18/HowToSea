@@ -35,6 +35,52 @@ docker-compose up
 
 The source code is loaded to the containers as volumes for development only.
 
+## Lambda function
+
+Small helper functions are run via Amazon Lambda for simplicity
+eg: turn on / off services
+
+to run lambda locally for the first time, follow this guide
+https://docs.aws.amazon.com/lambda/latest/dg/python-image.html
+
+Start the function
+
+```bash
+docker run --platform <your-platform> -d -v ~/.aws-lambda-rie:/aws-lambda -p 9000:8080 \
+    --entrypoint /aws-lambda/aws-lambda-rie \
+    <image>:<tag> \
+        /usr/local/bin/python -m awslambdaric <file>.<function_name>
+```
+
+LambdaRIC does not create an entire request object, like the lambda URL would. Therefore, to test Lambda locally, you need to simulate the request object passed to the Lambda function by the server receiving the request.
+
+Structure is like
+
+```json
+{
+  "queryStringParameters": {
+    "key": "value"
+  },
+  "requestContext": {
+    "http": {
+      "method": "GET",
+      "path": "/..."
+    }
+  },
+  "body": "<string>"
+}
+```
+
+```bash
+#with LambdaRIC
+curl -X POST "http://localhost:9000/2015-03-31/functions/function/invocations" \
+    -d '{
+    "queryStringParameters": {...},
+    "requestContext": {...},
+    "body": "",
+     }'
+```
+
 # Deployment
 
 ## Backend services
@@ -55,3 +101,5 @@ cd location && ./push_image_to_prod.sh
 ## Web App
 
 The app is automatically rebuilt and deployed by Vercel when a new commit is made to `prod`.
+
+## Lambda
