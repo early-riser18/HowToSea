@@ -121,8 +121,9 @@ resource "aws_ecs_task_definition" "nginx_proxy" {
           value = "${var.project_name}-location-${var.env}.${var.project_name}-${var.env}"
         },
         {
-          name  = "LAMBDA_API_URL"
-          value = "${aws_lambda_function_url.lambda_api.function_url}"
+          name = "LAMBDA_API_URL"
+          #hardcoded because it must not contain trailing slash for compatibility with local lambda endpoint
+          value = "https://gnybkd4pd2d2rl2mecaoi54ksa0urmku.lambda-url.ap-northeast-1.on.aws"
 
         }
       ]

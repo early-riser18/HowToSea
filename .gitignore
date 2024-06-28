@@ -3,3 +3,6 @@ terraform.tfstate*
 
 .env.local
 __pycache__
+
+## NGINX
+mock_letsencrypt/
