@@ -2,12 +2,17 @@ import json
 import boto3
 import time
 import logging
+import os
 
 SERVICE_NAMES = ["location"]
 CLUSTER_NAME = "how-to-sea-prod"
 
+if len(logging.getLogger().handlers) > 0:
+    logging.getLogger().setLevel(logging.INFO)
+else:
+    logging.basicConfig(level=logging.INFO)
+
 logger = logging.getLogger()
-logger.setLevel("INFO")
 
 
 def lambda_handler(raw_event, context):
@@ -21,7 +26,10 @@ def lambda_handler(raw_event, context):
     Returns:
     dict: Response with status code.
     """
-    logger.info("Received event: %s", raw_event)
+    if os.getenv("ENV") == "local":
+        raw_event = construct_local_event(raw_event)
+
+    # logger.info("Received event: %s", raw_event)
     print("Event received", raw_event)
 
     try:
@@ -34,13 +42,13 @@ def lambda_handler(raw_event, context):
             desired_cnt = event["desired_count"]
             assert type(desired_cnt) == int
             desired_cnt = 1 if desired_cnt > 0 else 0
+            return scale_service(desired_cnt)
 
         except (AssertionError, KeyError) as e:
             logger.error("Invalid input: %s", e)
             return {
                 "statusCode": 400,
             }
-        return scale_service(desired_cnt)
 
     return scale_service(0)
 
@@ -69,6 +77,19 @@ def scale_service(task_cnt: int):
             }
         logger.info("Retrying...")
         time.sleep(5)
+
+
+def construct_local_event(event):
+    """
+    Constructs a simple event object for local testing
+    to simulate the API Gateway event structure.
+    """
+    # Simulate an API Gateway event structure
+    return {
+        "headers": {},
+        "requestContext": {},
+        "body": json.dumps(event),
+    }
 
 
 if __name__ == "__main__":
