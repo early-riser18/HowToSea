@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "dev-stage": "dotenv -e .env -- next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
@@ -15,9 +16,11 @@
     "dotenv": "^16.4.5",
     "next": "14.2.3",
     "react": "^18",
-    "react-dom": "^18"
+    "react-dom": "^18",
+    "react-spinners": "^0.14.1"
   },
   "devDependencies": {
+    "dotenv-cli": "^7.4.2",
     "eslint": "^8",
     "eslint-config-next": "14.2.3",
     "postcss": "^8",
