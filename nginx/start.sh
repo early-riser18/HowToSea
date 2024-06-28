@@ -4,4 +4,8 @@
 
 envsubst '$DNS_ADDRESS,$LOCATION_HOSTNAME,$LAMBDA_API_URL' < /etc/nginx/conf.d/default.template > /etc/nginx/nginx.conf
 
-exec nginx -g 'daemon off;'
+if [[ $ENV == "local" ]]; then
+    exec nginx-debug -g 'daemon off;'
+else 
+    exec nginx -g 'daemon off;'
+fi
