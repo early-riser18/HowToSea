@@ -1,0 +1,26 @@
+#For local dev only
+
+services:
+  lambda_api:
+    image: scale_service_lambda:latest
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    environment:
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_DEFAULT_REGION=${AWS_DEFAULT_REGION}
+      - ENV=local
+    volumes:
+      - ~/.aws-lambda-rie:/aws-lambda
+    ports:
+      - "9000:8080"
+    entrypoint: ["/aws-lambda/aws-lambda-rie"]
+    command: ["/usr/local/bin/python", "-m", "awslambdaric", "main.lambda_handler"]
+    networks:
+    - network1
+
+networks:
+  network1:
+    name: how-to-sea
+    external: true

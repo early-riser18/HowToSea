@@ -119,6 +119,12 @@ resource "aws_ecs_task_definition" "nginx_proxy" {
         {
           name  = "LOCATION_HOSTNAME"
           value = "${var.project_name}-location-${var.env}.${var.project_name}-${var.env}"
+        },
+        {
+          name = "LAMBDA_API_URL"
+          #hardcoded because it must not contain trailing slash for compatibility with local lambda endpoint
+          value = "https://gnybkd4pd2d2rl2mecaoi54ksa0urmku.lambda-url.ap-northeast-1.on.aws"
+
         }
       ]
       portMappings = [
@@ -328,3 +334,84 @@ resource "aws_service_discovery_service" "location" {
     failure_threshold = 1
   }
 }
+
+
+
+########################################################
+#                   AWS LAMBDA                         #
+########################################################
+
+resource "aws_iam_role" "lambda_api" {
+
+  name = "how-to-sea-lambda-api-lambda-role"
+
+  assume_role_policy = jsonencode({
+    "Version" : "2012-10-17",
+    "Statement" : [
+      {
+        "Effect" : "Allow",
+        "Action" : [
+          "sts:AssumeRole"
+        ],
+        "Principal" : {
+          "Service" : [
+            "lambda.amazonaws.com"
+          ]
+        }
+      }
+    ]
+  })
+}
+
+
+resource "aws_iam_policy" "lambda_api_permissions" {
+  name        = "How-To-Sea-Lambda_API_Permissions"
+  description = "Policy to allow required permissions for how to sea lambda api"
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect   = "Allow"
+        Action   = ["ecs:UpdateService", "ecs:DescribeServices"],
+        Resource = ["arn:aws:ecs:ap-northeast-1:211125707335:service/how-to-sea-prod/location"]
+      },
+      {
+        Effect = "Allow"
+        Action = [
+          "cloudwatch:*",
+          "logs:*",
+          "events:*"
+        ]
+        Resource = "*"
+      }
+    ]
+  })
+}
+
+
+resource "aws_iam_role_policy_attachment" "lambda_api_permissions" {
+  role       = aws_iam_role.lambda_api.name
+  policy_arn = aws_iam_policy.lambda_api_permissions.arn
+}
+
+resource "aws_lambda_function" "lambda_api" {
+
+  function_name = "lambda-api"
+  role          = aws_iam_role.lambda_api.arn
+  package_type  = "Image"
+  image_uri     = "${aws_ecr_repository.ecr_repo.repository_url}:lambda_api-latest"
+  timeout       = 300
+  memory_size   = 128
+  environment {
+    variables = {
+      ENV = "lambda"
+    }
+  }
+
+}
+resource "aws_lambda_function_url" "lambda_api" {
+  function_name      = aws_lambda_function.lambda_api.function_name
+  authorization_type = "NONE"
+}
+
