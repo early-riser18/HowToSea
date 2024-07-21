@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import { APIProvider } from "@vis.gl/react-google-maps";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import SearchResultsContainer from "./SearchResultsContainer";
 import SearchBar from "./SearchBar";
@@ -21,16 +22,10 @@ export default function SearchPage() {
       });
   }, [searchParams]); // Makes a search query to /location/search. Depends on query params found
 
-  function handleSearch(e) {
+  function handleSearchRequest({ lat, lng, rad, level }) {
     // update searchParams, which should trigger search useEffect
-    e.preventDefault();
 
     try {
-      const rad = e.target.elements.rad.value;
-      const level = e.target.elements.level.value;
-      const lat = 43;
-      const lng = 7;
-
       const queryString = `?lat=${lat}&lng=${lng}&rad=${rad}&level=${level}`;
       router.push(`${pathname}${queryString}`);
     } catch (error) {
@@ -75,10 +70,12 @@ export default function SearchPage() {
   }
   return (
     <>
-      <div className="px-5 md:px-10 xl:px-20">
-        <SearchBar handleSubmit={handleSearch} />
-        <SearchResultsContainer status={queryStatus} data={queryResults} />
-      </div>
+      <APIProvider apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}>
+        <div className="px-5 md:px-10 xl:px-20">
+          <SearchBar handleSubmit={handleSearchRequest} />
+          <SearchResultsContainer status={queryStatus} data={queryResults} />
+        </div>
+      </APIProvider>
     </>
   );
 }
