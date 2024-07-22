@@ -1,7 +1,12 @@
 import { useEffect, useRef, useState } from "react";
 import { useMapsLibrary } from "@vis.gl/react-google-maps";
 
-const PlaceAutocomplete = ({ children, onPlaceSelect, onChange }) => {
+const PlaceAutocomplete = ({
+  children,
+  onPlaceSelect,
+  onChange,
+  placeholder,
+}) => {
   const [placeAutocomplete, setPlaceAutocomplete] = useState(null);
   const inputRef = useRef(null);
   const places = useMapsLibrary("places");
@@ -25,7 +30,12 @@ const PlaceAutocomplete = ({ children, onPlaceSelect, onChange }) => {
   }, [placeAutocomplete]);
   return (
     <div className="autocomplete-container">
-      <input ref={inputRef} onChange={onChange} value={children} />
+      <input
+        ref={inputRef}
+        onChange={onChange}
+        value={children}
+        placeholder={placeholder || ""}
+      />
     </div>
   );
 };

@@ -1,7 +1,22 @@
+"use client";
 import HomeSearchBar from "@/components/_home_components/HomeSearchBar";
 import SpotList from "@/components/_home_components/SpotList";
+import { APIProvider } from "@vis.gl/react-google-maps";
+import { useRouter } from "next/navigation";
 
 export default function HomePage() {
+  const router = useRouter();
+
+  function handleSearchRequest({ lat, lng, rad, level }) {
+    try {
+      const queryString = `?lat=${lat}&lng=${lng}&rad=${rad}&level=${level}`;
+      router.push(`/search${queryString}`);
+    } catch (error) {
+      console.log(error);
+      alert("Une erreur s'est produite.");
+      return;
+    }
+  }
   return (
     <>
       <div className="px-5 md:px-10 xl:px-20">
@@ -14,7 +29,9 @@ export default function HomePage() {
             plongée en France et dans les septs mers du Globe.
           </p>
         </div>
-        <HomeSearchBar />
+        <APIProvider apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}>
+          <HomeSearchBar handleSubmit={handleSearchRequest} />
+        </APIProvider>
         <SpotList />
       </div>
     </>
