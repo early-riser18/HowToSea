@@ -25,14 +25,21 @@ export default function SearchBar({ handleSubmit }) {
       rad: e.target.elements.rad.value,
       level: e.target.elements.level.value,
     };
-    setPlaceField(selectedPlaceRes.formatted_address);
+    const displayAddress = resolveDisplayAddress(selectedPlaceRes);
+    setPlaceField(displayAddress);
     setInputData(newInputData);
     handleSubmit(newInputData);
   }
 
+  function onPlaceSelect(val) {
+    // Expects a PlaceResult Object https://developers.google.com/maps/documentation/javascript/reference/places-service#PlaceResult
+    const displayAddress = resolveDisplayAddress(val);
+    setPlaceField(displayAddress);
+  }
+
   async function getPlaceFromInput(val) {
     const request = {
-      fields: ["geometry", "formatted_address"],
+      fields: ["geometry", "formatted_address", "name"],
       query: val,
     };
 
@@ -47,9 +54,11 @@ export default function SearchBar({ handleSubmit }) {
     });
   }
 
-  function onPlaceSelect(val) {
-    // Expects a PlaceResult Object https://developers.google.com/maps/documentation/javascript/reference/places-service#PlaceResult
-    setPlaceField(val.formatted_address);
+  function resolveDisplayAddress(placeRes) {
+    // Autocomplete widget displays different addresses than the formatted address returned. https://stackoverflow.com/questions/50275296/google-maps-autocomplete-formatted-address-is-not-the-same-as-the-displayed-one
+    return placeRes.formatted_address.includes(`${placeRes.name}`)
+      ? placeRes.formatted_address
+      : `${placeRes.name}, ${placeRes.formatted_address}`;
   }
 
   function onChangePlaceField(e) {
