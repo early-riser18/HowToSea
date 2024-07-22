@@ -8,7 +8,12 @@ export default function SearchResultsContainer({ status, data }) {
     let content = <></>;
 
     if (data.length == 0) {
-      content = <p>Pas de résultat trouvé</p>;
+      content = (
+        <p>
+          Pas de résultat trouvé <br /> Pour obtenir plus de résultat, essayer
+          d&apos;ajuster la zone de recherche.
+        </p>
+      );
     } else {
       content = (
         <div className="flex flex-row flex-wrap gap-4 lg:flex-col lg:gap-0">
@@ -26,7 +31,7 @@ export default function SearchResultsContainer({ status, data }) {
     );
   }
   function renderError() {
-    return <p>Une erreur s'est produite</p>;
+    return <p>Une erreur s&apos;est produite</p>;
   }
 
   function renderContent() {

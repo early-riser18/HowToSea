@@ -29,7 +29,10 @@ export default function HomePage() {
             plongée en France et dans les septs mers du Globe.
           </p>
         </div>
-        <APIProvider apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}>
+        <APIProvider
+          language="fr"
+          apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}
+        >
           <HomeSearchBar handleSubmit={handleSearchRequest} />
         </APIProvider>
         <SpotList />

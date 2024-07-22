@@ -68,7 +68,10 @@ export default function SearchPage() {
   }
   return (
     <>
-      <APIProvider apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}>
+      <APIProvider
+        language="fr"
+        apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}
+      >
         <div className="px-5 md:px-10 xl:px-20">
           <SearchBar handleSubmit={handleSearchRequest} />
           <SearchResultsContainer status={queryStatus} data={queryResults} />
