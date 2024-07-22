@@ -69,7 +69,6 @@ export default function SearchBar({ handleSubmit }) {
     <>
       <form className="flex" onSubmit={onSubmit}>
         <PlaceAutocomplete
-          // onChange={onChangeLocationField}
           onPlaceSelect={onPlaceSelect}
           onChange={onChangePlaceField}
         >
@@ -123,13 +122,3 @@ const PlaceAutocomplete = ({ children, onPlaceSelect, onChange }) => {
     </div>
   );
 };
-
-/*
-Could create a place.PlacesServices object
-Take input field state 
-run findPlaceFromQuery and take first one
-update input field
-update formData
-
-problem is that it would make it run twice if user did select autocomplete
-*/

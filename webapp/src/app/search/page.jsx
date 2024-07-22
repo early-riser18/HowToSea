@@ -23,8 +23,6 @@ export default function SearchPage() {
   }, [searchParams]); // Makes a search query to /location/search. Depends on query params found
 
   function handleSearchRequest({ lat, lng, rad, level }) {
-    // update searchParams, which should trigger search useEffect
-
     try {
       const queryString = `?lat=${lat}&lng=${lng}&rad=${rad}&level=${level}`;
       router.push(`${pathname}${queryString}`);
