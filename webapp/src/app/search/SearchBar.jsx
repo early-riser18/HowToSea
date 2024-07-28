@@ -12,7 +12,7 @@ export default function HomeSearchBar({ handleSubmit }) {
   return (
     <>
       <form
-        className="rounder-md my-3 inline-flex items-center border-slate-200 bg-slate-100 px-2"
+        className="my-3 inline-flex items-center rounded-lg border-slate-200 bg-slate-100 px-2"
         onSubmit={onSubmit}
       >
         <FormInput

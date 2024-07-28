@@ -9,8 +9,8 @@ const radiusOptions = [
 
 const levelOptions = [
   { value: "easy", label: "Facile" },
-  { value: "medium", label: "Moyen" },
-  { value: "hard", label: "Difficile" },
+  { value: "medium", label: "Intermédiaire" },
+  { value: "hard", label: "Avancé" },
 ];
 
 export { levelOptions, radiusOptions };
