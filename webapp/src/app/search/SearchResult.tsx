@@ -1,7 +1,9 @@
 import Link from "next/link";
+import { Spot } from "@/interfaces/main";
+import { LevelOptions } from "../utils/spotSearchOptions";
 
-export default function SearchResult({ data }) {
-  function mapLevel(level) {
+export default function SearchResult({ data }: { data: Spot }): JSX.Element {
+  function mapLevel(level: LevelOptions["value"]) {
     switch (level) {
       case "easy":
         return "facile";

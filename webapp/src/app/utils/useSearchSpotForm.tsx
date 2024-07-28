@@ -1,11 +1,27 @@
 import { useMapsLibrary } from "@vis.gl/react-google-maps";
-import { useEffect, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
+import { SearchAPIParams, SearchRequestURLParams } from "../search/interface";
 
-export default function useSearchSpotForm(handleSubmit) {
-  // Defines the state and logic to produce the correct input when submitting the form
-  const [inputData, setInputData] = useState({ lat: 0, lng: 0, rad: "1" });
-  const [placeField, setPlaceField] = useState("");
-  const [placesService, setPlacesService] = useState(null);
+/*
+Defines the state and logic to produce the correct input when submitting the form
+*/
+export default function useSearchSpotForm(
+  handleSubmit: (searchParams: SearchAPIParams) => any,
+): {
+  inputData: SearchRequestURLParams;
+  placeField: string;
+  onChangePlaceField: (e: ChangeEvent<HTMLFormElement>) => void;
+  onPlaceSelect: (e: google.maps.places.PlaceResult) => void;
+  onSubmit: (e: ChangeEvent<HTMLFormElement>) => Promise<void>;
+} {
+  const [inputData, setInputData] = useState<SearchRequestURLParams>({
+    lat: "0",
+    lng: "0",
+    rad: "1",
+  });
+  const [placeField, setPlaceField] = useState<string>("");
+  const [placesService, setPlacesService] =
+    useState<google.maps.places.PlacesService | null>(null);
   const places = useMapsLibrary("places");
 
   useEffect(() => {
@@ -14,17 +30,20 @@ export default function useSearchSpotForm(handleSubmit) {
     setPlacesService(service);
   }, [places]);
 
-  async function onSubmit(e) {
+  async function onSubmit(e: ChangeEvent<HTMLFormElement>): Promise<void> {
     e.preventDefault();
     const res = await getPlaceFromInput(placeField);
     const selectedPlaceRes = res[0];
+
+    const radInput = e.target.elements.namedItem("rad") as HTMLInputElement;
+    const levelInput = e.target.elements.namedItem("level") as HTMLInputElement;
 
     const newInputData = {
       ...inputData,
       lat: selectedPlaceRes.geometry.location.lat(),
       lng: selectedPlaceRes.geometry.location.lng(),
-      rad: e.target.elements.rad.value,
-      level: e.target.elements.level.value,
+      rad: radInput.value,
+      level: levelInput.value,
     };
     const displayAddress = resolveDisplayAddress(selectedPlaceRes);
     setPlaceField(displayAddress);
@@ -32,16 +51,15 @@ export default function useSearchSpotForm(handleSubmit) {
     handleSubmit(newInputData);
   }
 
-  function onPlaceSelect(val) {
-    // Expects a PlaceResult Object https://developers.google.com/maps/documentation/javascript/reference/places-service#PlaceResult
+  function onPlaceSelect(val: google.maps.places.PlaceResult): void {
     const displayAddress = resolveDisplayAddress(val);
     setPlaceField(displayAddress);
   }
 
-  async function getPlaceFromInput(val) {
+  async function getPlaceFromInput(placeInput: string) {
     const request = {
       fields: ["geometry", "formatted_address", "name"],
-      query: val,
+      query: placeInput,
     };
 
     return new Promise((resolve, reject) => {
@@ -55,14 +73,16 @@ export default function useSearchSpotForm(handleSubmit) {
     });
   }
 
-  function resolveDisplayAddress(placeRes) {
+  function resolveDisplayAddress(
+    placeRes: google.maps.places.PlaceResult,
+  ): string {
     // Autocomplete widget displays different addresses than the formatted address returned. https://stackoverflow.com/questions/50275296/google-maps-autocomplete-formatted-address-is-not-the-same-as-the-displayed-one
     return placeRes.formatted_address.includes(`${placeRes.name}`)
       ? placeRes.formatted_address
       : `${placeRes.name}, ${placeRes.formatted_address}`;
   }
 
-  function onChangePlaceField(e) {
+  function onChangePlaceField(e: ChangeEvent<HTMLFormElement>): void {
     setPlaceField(e.target.value);
   }
 

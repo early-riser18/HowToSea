@@ -5,7 +5,7 @@ import useSearchSpotForm from "@/app/utils/useSearchSpotForm";
 import PlaceAutocomplete from "@/app/utils/PlaceAutocomplete";
 import { radiusOptions, levelOptions } from "@/app/utils/spotSearchOptions";
 
-export default function HomeSearchBar({ handleSubmit }) {
+export default function HomeSearchBar({ handleSubmit }): JSX.Element {
   const { placeField, onSubmit, onPlaceSelect, onChangePlaceField } =
     useSearchSpotForm(handleSubmit);
 
@@ -69,7 +69,7 @@ export default function HomeSearchBar({ handleSubmit }) {
   );
 }
 
-function Label({ children, myHtmlFor }) {
+function Label({ children, myHtmlFor }: { children: any; myHtmlFor?: string }) {
   return (
     <label
       className="mb-1.5 text-xs font-semibold uppercase"
