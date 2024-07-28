@@ -3,7 +3,7 @@ from flask import Response, make_response
 
 SEARCH_PARAMS_TYPE = {
     "lat": float,
-    "lng": int,
+    "lng": float,
     "rad": float,
     "level": list,
 }

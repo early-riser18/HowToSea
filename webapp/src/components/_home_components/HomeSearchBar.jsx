@@ -1,7 +1,13 @@
+"use client";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
+import useSearchSpotForm from "@/app/utils/useSearchSpotForm";
+import PlaceAutocomplete from "@/app/utils/PlaceAutocomplete";
+import { levelOptions } from "@/app/utils/spotSearchOptions";
 
-export default function HomeSearchBar() {
+export default function HomeSearchBar({ handleSubmit }) {
+  const { placeField, onSubmit, onPlaceSelect, onChangePlaceField } =
+    useSearchSpotForm(handleSubmit);
   return (
     <>
       <div
@@ -11,22 +17,35 @@ export default function HomeSearchBar() {
         <form
           className="xl-max-w-[1100px] flex max-w-[90%] basis-full flex-col flex-wrap justify-center rounded-xl md:flex-row md:items-center md:bg-white"
           id="search_spot"
+          onSubmit={onSubmit}
         >
           <FormInput
             myLabel={<Label myHtmlFor="coord"> Zone Géographique</Label>}
-            myInput={<input placeholder="Où veux-tu plonger?" id="coord" />}
+            myInput={
+              <PlaceAutocomplete
+                onPlaceSelect={onPlaceSelect}
+                onChange={onChangePlaceField}
+                placeholder="Où veux-tu plonger?"
+              >
+                {placeField}
+              </PlaceAutocomplete>
+            }
           />
           <FormInput
             myLabel={<Label myHtmlFor="label">Niveau recommandé</Label>}
             myInput={
               <select id="level">
-                <option value="all">Tous niveaux</option>
-                <option value="easy">Facile</option>
-                <option value="medium">Intermédiaire</option>
-                <option value="hard">Avancé</option>
+                {levelOptions.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
               </select>
             }
           />
+          <select id="rad" defaultValue="9" className="hidden">
+            <option value="9" />
+          </select>
           <div className="my-2 flex justify-center rounded-xl bg-search-gradient px-5 py-3 text-white md:mr-2 md:rounded-lg">
             <button>
               <FontAwesomeIcon className="pr-2" icon={faMagnifyingGlass} />
@@ -35,42 +54,6 @@ export default function HomeSearchBar() {
           </div>
         </form>
       </div>
-
-      {/* <div>
-        <form id="searchBarBig">
-          <div>
-            <div>
-              <label htmlFor="areaQuery">
-                <div>Zone Géographique</div>
-                <input
-                  type="text"
-                  name="areaQuery"
-                  id="zoneQueryAutocomplete"
-                  placeholder="Où veux-tu plonger?"
-                />
-              </label>
-            </div>
-
-            <div>
-              <label htmlFor="keyWordQuery">
-                <div>Niveau recommendé</div>
-                <select name="keyWordQuery">
-                  <option value="all">Tous niveaux</option>
-                  <option value="easy">Facile</option>
-                  <option value="medium">Intermédiaire</option>
-                  <option value="hard">Avancé</option>
-                </select>
-              </label>
-            </div>
-
-            <div>
-              <button type="submit">
-                <img alt="" /> Rechercher
-              </button>
-            </div>
-          </div>
-        </form>
-      </div> */}
     </>
   );
 }

@@ -14,12 +14,12 @@
     "lng": {
       "type": "number",
       "description": "Longitude of the center of the area requested.",
-      "minimum": -90,
-      "maximum": 90
+      "minimum": -180,
+      "maximum": 180
     },
     "rad": {
-      "type": "integer",
-      "description": "Search radius around the search point, in kilometers",
+      "type": "number",
+      "description": "Search radius around the search point, in one-hundredth of a degree.",
       "minimum": 0,
       "maximum": 1000
     },
