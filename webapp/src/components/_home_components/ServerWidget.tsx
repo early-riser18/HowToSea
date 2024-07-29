@@ -53,7 +53,7 @@ export default function ServerWidget() {
         window.location.reload();
         break;
       }
-      function delay(ms) {
+      function delay(ms: number) {
         return new Promise((resolve) => setTimeout(resolve, ms));
       }
       await delay(5000);
