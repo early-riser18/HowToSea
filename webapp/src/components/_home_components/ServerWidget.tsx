@@ -3,8 +3,9 @@
 import { useEffect, useState } from "react";
 import { ClipLoader } from "react-spinners";
 export default function ServerWidget() {
-  const [isServerUp, setIsServerUp] = useState(false);
-  const [isRequestingServerUp, setIsRequestingServerUp] = useState(false);
+  const [isServerUp, setIsServerUp] = useState<boolean>(false);
+  const [isRequestingServerUp, setIsRequestingServerUp] =
+    useState<boolean>(false);
 
   useEffect(() => {
     async function fetchServerStatus() {
@@ -14,7 +15,7 @@ export default function ServerWidget() {
     fetchServerStatus();
   }, []);
 
-  async function checkServerStatus() {
+  async function checkServerStatus(): Promise<boolean> {
     try {
       const res = await fetch(
         `${process.env.NEXT_PUBLIC_WEB_SERVER_URL}/location/`,
@@ -25,7 +26,7 @@ export default function ServerWidget() {
     }
   }
 
-  async function requestServerUp() {
+  async function requestServerUp(): Promise<void> {
     const options = {
       method: "POST",
       headers: {
@@ -39,7 +40,7 @@ export default function ServerWidget() {
       .catch((e) => console.info("Unable to fetch service /location"));
   }
 
-  async function handleOnClick() {
+  async function handleOnClick(): Promise<void> {
     // Request server to turn on
     setIsRequestingServerUp(true);
     requestServerUp();
@@ -52,7 +53,7 @@ export default function ServerWidget() {
         window.location.reload();
         break;
       }
-      function delay(ms) {
+      function delay(ms: number) {
         return new Promise((resolve) => setTimeout(resolve, ms));
       }
       await delay(5000);
@@ -72,9 +73,9 @@ export default function ServerWidget() {
     while (minutes / u[i] > 1) {
       i++;
     }
-    minutes = String(u[i - 1]).padStart(2, "0");
+    const minuteStr = String(u[i - 1]).padStart(2, "0");
 
-    return `${hours}:${minutes}`;
+    return `${hours}:${minuteStr}`;
   }
 
   var btnMsg = isRequestingServerUp
@@ -82,7 +83,6 @@ export default function ServerWidget() {
     : "Turn on servers";
   var content = (
     <p className="text-white">
-      {" "}
       Servers running until {getNextServerDownTime()}
     </p>
   );

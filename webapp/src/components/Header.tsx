@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-export default function Header() {
+export default function Header(): JSX.Element {
   return (
     <>
       <div className="bg-white px-1 py-1 shadow-sm md:px-10 xl:px-20">

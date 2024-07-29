@@ -1,10 +1,19 @@
+import { Spot } from "@/interfaces/main";
 import SearchResult from "./SearchResult";
+import { QueryStatus } from "./interface";
 
-export default function SearchResultsContainer({ status, data }) {
-  function renderLoading() {
+export default function SearchResultsContainer({
+  status,
+  data,
+}: {
+  status: QueryStatus;
+  data: Spot[];
+}) {
+  function renderLoading(): JSX.Element {
     return <p>Recherche en cours</p>;
   }
-  function renderSuccess() {
+
+  function renderSuccess(): JSX.Element {
     let content = <></>;
 
     if (data.length == 0) {
@@ -30,11 +39,11 @@ export default function SearchResultsContainer({ status, data }) {
       </>
     );
   }
-  function renderError() {
+  function renderError(): JSX.Element {
     return <p>Une erreur s&apos;est produite</p>;
   }
 
-  function renderContent() {
+  function renderContent(): JSX.Element {
     switch (status) {
       case "loading":
         return renderLoading();

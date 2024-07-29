@@ -1,11 +1,11 @@
 "use client";
 
+import { Spot } from "@/interfaces/main";
 import { useEffect, useState } from "react";
 
-export default function SpotList() {
-  const [spotsData, setSpotsData] = useState([]);
+export default function SpotList(): JSX.Element {
+  const [spotsData, setSpotsData] = useState<Spot[]>([]);
   useEffect(() => {
-    console.log("i am called");
     const options = {
       method: "GET", // HTTP method
       headers: {
@@ -35,14 +35,14 @@ export default function SpotList() {
       </h2>
       <div className="mb-20 flex flex-wrap justify-around">
         {spotsData.map((spot) => (
-          <SpotMiniature key={spot.id} spot={spot} />
+          <SpotMiniature key={spot._id.$oid} spot={spot} />
         ))}
       </div>
     </div>
   );
 }
 
-function SpotMiniature({ spot }) {
+function SpotMiniature({ spot }: { spot: Spot }) {
   return (
     <div className="m-2 w-[380px] cursor-pointer overflow-hidden rounded-xl shadow-lg transition-transform duration-200 ease-in-out hover:scale-105">
       <img className="h-60 w-full object-cover" src={spot.image[0]} alt="" />

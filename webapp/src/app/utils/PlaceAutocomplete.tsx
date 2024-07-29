@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { ChangeEvent, useEffect, useRef, useState } from "react";
 import { useMapsLibrary } from "@vis.gl/react-google-maps";
 
 const PlaceAutocomplete = ({
@@ -6,8 +6,14 @@ const PlaceAutocomplete = ({
   onPlaceSelect,
   onChange,
   placeholder,
-}) => {
-  const [placeAutocomplete, setPlaceAutocomplete] = useState(null);
+}: {
+  children?: any;
+  onPlaceSelect: (e: google.maps.places.PlaceResult) => any;
+  onChange: (e: ChangeEvent) => any;
+  placeholder: string;
+}): JSX.Element => {
+  const [placeAutocomplete, setPlaceAutocomplete] =
+    useState<google.maps.places.Autocomplete | null>(null);
   const inputRef = useRef(null);
   const places = useMapsLibrary("places");
 

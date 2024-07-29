@@ -4,13 +4,15 @@ import { APIProvider } from "@vis.gl/react-google-maps";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import SearchResultsContainer from "./SearchResultsContainer";
 import SearchBar from "./SearchBar";
+import { HTSAPIResponse, Spot } from "@/interfaces/main";
+import { QueryStatus, SearchRequestURLParams } from "./interface";
 
 export default function SearchPage() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const [queryStatus, setQueryStatus] = useState("loading");
-  const [queryResults, setQueryResults] = useState(null);
+  const [queryStatus, setQueryStatus] = useState<QueryStatus>("loading");
+  const [queryResults, setQueryResults] = useState<Spot[]>(null);
 
   useEffect(() => {
     fetchLocation(searchParams.toString())
@@ -22,7 +24,12 @@ export default function SearchPage() {
       });
   }, [searchParams]); // Makes a search query to /location/search. Depends on query params found
 
-  function handleSearchRequest({ lat, lng, rad, level }) {
+  function handleSearchRequest({
+    lat,
+    lng,
+    rad,
+    level,
+  }: SearchRequestURLParams): void {
     try {
       const queryString = `?lat=${lat}&lng=${lng}&rad=${rad}&level=${level}`;
       router.push(`${pathname}${queryString}`);
@@ -32,20 +39,22 @@ export default function SearchPage() {
     }
   }
 
-  async function fetchLocation(searchParamsStr) {
+  async function fetchLocation(searchParamsStr: string): Promise<Spot[]> {
     setQueryStatus("loading");
+
+    const url = `${process.env.NEXT_PUBLIC_WEB_SERVER_URL}/location/search?${searchParamsStr}`;
     const options = {
       method: "GET",
       headers: { "Content-Type": "application/json" },
     };
-    const url = `${process.env.NEXT_PUBLIC_WEB_SERVER_URL}/location/search?${searchParamsStr}`;
+    const response = await fetch(url, options);
 
     try {
-      const response = await fetch(url, options);
       if (!response.ok) {
         throw new Error("Network response was not ok " + response.statusText);
       }
-      let a = await response.json();
+
+      const a: HTSAPIResponse = await response.json();
 
       if (!validateQueryResult(a.data)) {
         throw new Error("Invalid result: " + a.data);
@@ -56,10 +65,10 @@ export default function SearchPage() {
     } catch (error) {
       console.error("An error occured while talking to the server.", error);
       setQueryStatus("error");
-      return null;
+      return [];
     }
   }
-  function validateQueryResult(resultObj) {
+  function validateQueryResult(resultObj: Spot[]): boolean {
     // Can be expanded further.
     if (!Array.isArray(resultObj)) {
       return false;
