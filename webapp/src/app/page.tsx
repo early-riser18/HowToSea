@@ -3,11 +3,17 @@ import HomeSearchBar from "@/components/_home_components/HomeSearchBar";
 import SpotList from "@/components/_home_components/SpotList";
 import { APIProvider } from "@vis.gl/react-google-maps";
 import { useRouter } from "next/navigation";
+import { SearchRequestURLParams } from "./search/interface";
 
-export default function HomePage() {
+export default function HomePage(): JSX.Element {
   const router = useRouter();
 
-  function handleSearchRequest({ lat, lng, rad, level }) {
+  function handleSearchRequest({
+    lat,
+    lng,
+    rad,
+    level,
+  }: SearchRequestURLParams): void {
     try {
       const queryString = `?lat=${lat}&lng=${lng}&rad=${rad}&level=${level}`;
       router.push(`/search${queryString}`);

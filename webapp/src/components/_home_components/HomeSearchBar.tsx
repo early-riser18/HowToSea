@@ -5,7 +5,7 @@ import useSearchSpotForm from "@/app/utils/useSearchSpotForm";
 import PlaceAutocomplete from "@/app/utils/PlaceAutocomplete";
 import { levelOptions } from "@/app/utils/spotSearchOptions";
 
-export default function HomeSearchBar({ handleSubmit }) {
+export default function HomeSearchBar({ handleSubmit }): JSX.Element {
   const { placeField, onSubmit, onPlaceSelect, onChangePlaceField } =
     useSearchSpotForm(handleSubmit);
   return (

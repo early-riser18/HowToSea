@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-export default function Footer({ user }) {
+export default function Footer({ user }: { user?: any }): JSX.Element {
   return (
     <footer className="flex justify-center border-b border-t border-neutral-200 bg-blue-50 p-4 leading-loose text-zinc-700">
       <div className="flex w-full max-w-[1300px] flex-wrap justify-between">

@@ -13,7 +13,7 @@ const PlaceAutocomplete = ({
   placeholder: string;
 }): JSX.Element => {
   const [placeAutocomplete, setPlaceAutocomplete] =
-    useState<google.maps.places.Autocomplete>(null);
+    useState<google.maps.places.Autocomplete | null>(null);
   const inputRef = useRef(null);
   const places = useMapsLibrary("places");
 
