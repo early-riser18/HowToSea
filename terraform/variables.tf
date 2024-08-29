@@ -27,3 +27,12 @@ variable "project_name" {
   type    = string
   default = "how-to-sea"
 }
+
+variable "AUTH0_CLIENT_ID" {
+  description = "Auth0 Client ID"
+  type        = string
+}
+variable "AUTH0_CLIENT_SECRET" {
+  description = "Auth0 Client Secret"
+  type        = string
+}
