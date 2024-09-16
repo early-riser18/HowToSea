@@ -4,3 +4,4 @@ authlib>=1.0
 requests>=2.27.1
 gunicorn~=22.0
 auth0-python~=4.7.0
+python-jose~=3.3
