@@ -4,6 +4,10 @@ terraform {
       source  = "hashicorp/aws"
       version = "~> 5.0"
     }
+    auth0 = {
+      source  = "auth0/auth0"
+      version = "1.4.0"
+    }
   }
 }
 
@@ -415,3 +419,11 @@ resource "aws_lambda_function_url" "lambda_api" {
   authorization_type = "NONE"
 }
 
+
+
+provider "auth0" {
+  domain        = "early-riser18.eu.auth0.com"
+  client_id     = var.AUTH0_CLIENT_ID
+  client_secret = var.AUTH0_CLIENT_SECRET
+  debug         = true
+}

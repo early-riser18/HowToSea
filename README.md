@@ -103,3 +103,13 @@ cd location && ./push_image_to_prod.sh
 The app is automatically rebuilt and deployed by Vercel when a new commit is made to `prod`.
 
 ## Lambda
+To do.
+
+
+## Auth0
+- Create a tenant and an application in Auth0.
+- Add required values to the provider "auth0" in the Terraform file.
+- Follow the [Auth0 quickstart guide](https://auth0.com/docs/quickstart/webapp/python/interactive).
+- Create a database connection for user creation requests.
+- Set up a management connection with Access Token and Password client credentials as the grant type and linking it to the API. Refer to [Auth0 client credentials flow](https://auth0.com/docs/get-started/authentication-and-authorization-flow/client-credentials-flow/call-your-api-using-the-client-credentials-flow).
+- For Google OAuth, register the application following [Google's guide](https://developers.google.com/identity/protocols/oauth2/web-server#httprest_1).
