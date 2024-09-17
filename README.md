@@ -107,17 +107,9 @@ To do.
 
 
 ## Auth0
-- Create a tenant
-- create an application
-- provide required values in provider "auth0" in terraform file
-- follow the quickstart guide at https://auth0.com/docs/quickstart/webapp/python/interactive
-- Create a database connection - you need to point to it when code makes request to create user.
-- create a management connection, this requires to setup an access token which requires to setup client credientials as grant type to the application and link it to the api. See https://auth0.com/docs/get-started/authentication-and-authorization-flow/client-credentials-flow/call-your-api-using-the-client-credentials-flow
-- for google OAuth, I'm following https://developers.google.com/identity/protocols/oauth2/web-server#httprest_1
-  - need to register application with them
-
-
-To add to wiki:
-- Decided to not encrypt pw on FE, after reading: https://blog.huli.tw/2023/01/10/en/security-of-encrypt-or-hash-password-in-client-side/
-- Decided to implement both [Backend For Frontend (BFF) Proxy](https://www.ietf.org/archive/id/draft-ietf-oauth-browser-based-apps-10.html#name-backend-for-frontend-bff-pr) on the Back-End and [JavaScript Applications Direct Access architecture](https://www.ietf.org/archive/id/draft-ietf-oauth-browser-based-apps-10.html#name-javascript-applications-acc) on the Front-End (not done yet). Two reasons: 1. It is interesting to learn both ways. 2. It allows to test OAuth-type user authorization without being dependent on a running Web Client.
-- For now, no check for existing email address is performed for oauth-type sign ups. But it is performed for login sign ups.
+- Create a tenant and an application in Auth0.
+- Add required values to the provider "auth0" in the Terraform file.
+- Follow the [Auth0 quickstart guide](https://auth0.com/docs/quickstart/webapp/python/interactive).
+- Create a database connection for user creation requests.
+- Set up a management connection with Access Token and Password client credentials as the grant type and linking it to the API. Refer to [Auth0 client credentials flow](https://auth0.com/docs/get-started/authentication-and-authorization-flow/client-credentials-flow/call-your-api-using-the-client-credentials-flow).
+- For Google OAuth, register the application following [Google's guide](https://developers.google.com/identity/protocols/oauth2/web-server#httprest_1).

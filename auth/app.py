@@ -1,7 +1,7 @@
 from os import environ
 import json
 from flask import Flask, request, redirect, jsonify
-from src.utils import signup_user, password_login
+from src.utils import password_signup, password_login
 from src.oauth import OAuthJWT, Auth0ServiceProvider
 
 
