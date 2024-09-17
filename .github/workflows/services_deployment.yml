@@ -1,0 +1,66 @@
+name: Build and Deploy Services to AWS
+on:
+    workflow_dispatch:
+env:
+    AWS_ACCOUNT_ID: 211125707335
+    AWS_REGION: ap-northeast-1
+    ECS_DOCKER_ARCHITECTURE: linux/amd64
+    ENV_SHORT: prod
+    ECR_REPOSITORY: how-to-sea-prod
+
+jobs:
+
+    build_deploy_nginx:
+        runs-on: ubuntu-latest
+        environment: Production
+        env:
+            IMG_NAME: nginx-proxy
+            IMG_TAG: latest
+
+        defaults:
+            run:
+                working-directory: ./nginx
+        steps:
+            - name: Checkout Code
+              uses: actions/checkout@v3
+              
+            - name: Create .env file
+              run: |
+                touch .env
+                echo "DNS_ADDRESS=${{vars.NGINX_DNS_ADDRESS}}" >> .env
+                echo "AUTH_HOSTNAME=${{vars.NGINX_AUTH_HOSTNAME}}" >> .env
+                echo "LOCATION_HOSTNAME=${{vars.NGINX_LOCATION_HOSTNAME}}" >> .env
+                echo "LAMBDA_API_URL=${{vars.LAMBDA_API_URL}}" >> .env
+            
+
+        # Set up AWS credentials using GitHub Secrets
+            - name: Configure AWS credentials
+              uses: aws-actions/configure-aws-credentials@v2
+              with:
+                  aws-access-key-id: ${{ vars.AWS_ACCESS_KEY_ID }}
+                  aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+                  aws-region: ${{ env.AWS_REGION}}
+                
+            # Log in to Amazon ECR
+            - name: Log in to Amazon ECR
+              id: login-ecr
+              uses: aws-actions/amazon-ecr-login@v1
+
+            - name: Build Docker image
+              run: |
+                docker build --platform ${{ env.ECS_DOCKER_ARCHITECTURE }} --build-arg ENV_FILE=.env \
+                 -t ${{ env.IMG_NAME }}:${{ env.IMG_TAG }} -f ./Dockerfile .
+                        # Tag the image for ECR
+
+
+            - name: Tag Docker image
+              run: |
+                ECR_ROOT = ${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com
+                docker tag ${{ env.IMG_NAME }}:${{ env.IMG_TAG }} ${ECR_ROOT}/${{ env.ECR_REPOSITORY }}:${{env.IMG_NAME}}-${{ env.IMG_TAG }}
+
+        
+            # Push the image to ECR
+            - name: Push Docker image to ECR
+              run: |
+                ECR_ROOT = ${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com
+                docker push ${ECR_ROOT}/${{ env.ECR_REPOSITORY }}:${{env.IMG_NAME}}-${{ env.IMG_TAG }}

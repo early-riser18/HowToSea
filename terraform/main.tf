@@ -116,25 +116,6 @@ resource "aws_ecs_task_definition" "nginx_proxy" {
       image     = "211125707335.dkr.ecr.ap-northeast-1.amazonaws.com/${var.project_name}-${var.env}:nginx-proxy-latest"
       essential = true
 
-      environment = [
-        { name  = "DNS_ADDRESS"
-          value = "10.0.0.2" # X.X.X.2 is AWS Route 53 DNS address
-        },
-        {
-          name  = "LOCATION_HOSTNAME"
-          value = "${var.project_name}-location-${var.env}.${var.project_name}-${var.env}"
-        },
-        {
-          name = "LAMBDA_API_URL"
-          #hardcoded because it must not contain trailing slash for compatibility with local lambda endpoint
-          value = "https://gnybkd4pd2d2rl2mecaoi54ksa0urmku.lambda-url.ap-northeast-1.on.aws"
-
-        },
-        {
-          name  = "AUTH_HOSTNAME"
-          value = "${var.project_name}-auth-${var.env}.${var.project_name}-${var.env}"
-        }
-      ]
       portMappings = [
         {
           containerPort = 80
