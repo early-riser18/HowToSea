@@ -11,6 +11,7 @@ env:
     ECS_DOCKER_ARCHITECTURE: linux/amd64
     ENV_SHORT: prod
     ECR_REPOSITORY: how-to-sea-prod
+    ECS_CLUSTER_NAME: how-to-sea-prod
 
 jobs:
 
@@ -69,3 +70,11 @@ jobs:
               run: |
                 export ECR_ROOT=${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com
                 docker push ${ECR_ROOT}/${{ env.ECR_REPOSITORY }}:${{env.IMG_NAME}}-${{ env.IMG_TAG }}
+            
+            - name: Deploy to ECS
+              run: |
+                    aws ecs update-service \
+                      --cluster ${{ env.ECS_CLUSTER_NAME }} \
+                      --service nginx-proxy \
+                      --region ${{ env.AWS_REGION }} \
+                      --force-new-deployment 
