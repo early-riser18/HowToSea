@@ -36,3 +36,12 @@ variable "AUTH0_CLIENT_SECRET" {
   description = "Auth0 Client Secret"
   type        = string
 }
+
+
+variable "AUTH0_DOMAIN" {}
+variable "AUTH0_DB_CONNECTION" {}
+variable "FLASK_SECRET_KEY" {}
+variable "GOOGLE_OAUTH_CLIENT_ID" {}
+variable "GOOGLE_OAUTH_CLIENT_SECRET" {}
+variable "BACKEND_API_URL" {}
+variable "AUTH_SERVICE_URL" {}

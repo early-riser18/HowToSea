@@ -129,6 +129,10 @@ resource "aws_ecs_task_definition" "nginx_proxy" {
           #hardcoded because it must not contain trailing slash for compatibility with local lambda endpoint
           value = "https://gnybkd4pd2d2rl2mecaoi54ksa0urmku.lambda-url.ap-northeast-1.on.aws"
 
+        },
+        {
+          name  = "AUTH_HOSTNAME"
+          value = "${var.project_name}-auth-${var.env}.${var.project_name}-${var.env}"
         }
       ]
       portMappings = [
@@ -192,6 +196,71 @@ resource "aws_ecs_task_definition" "location" {
         },
         { name  = "MONGODB_DB"
           value = var.MONGODB_LOCATION_DB
+        }
+      ]
+
+      logConfiguration = {
+        logDriver = "awslogs"
+        options = {
+          "awslogs-group"         = "/ecs/${var.project_name}-${var.env}"
+          "awslogs-region"        = var.aws_region
+          "awslogs-stream-prefix" = "ecs"
+        }
+      }
+    }
+  ])
+}
+
+resource "aws_ecs_task_definition" "auth" {
+  family                   = "${var.project_name}-auth-${var.env}"
+  network_mode             = "awsvpc"
+  requires_compatibilities = ["FARGATE"]
+  cpu                      = "256"
+  memory                   = "512"
+
+  execution_role_arn = aws_iam_role.ecs_execution_role.arn
+  container_definitions = jsonencode([
+    {
+      name      = "${var.project_name}-auth-${var.env}"
+      image     = "211125707335.dkr.ecr.ap-northeast-1.amazonaws.com/${var.project_name}-${var.env}:auth-latest"
+      essential = true
+
+      environment = [
+        {
+          name  = "AUTH0_CLIENT_ID"
+          value = var.AUTH0_CLIENT_ID
+        },
+        {
+          name  = "AUTH0_CLIENT_SECRET"
+          value = var.AUTH0_CLIENT_SECRET
+        },
+        {
+          name  = "AUTH0_DOMAIN"
+          value = var.AUTH0_DOMAIN
+        },
+        {
+          name  = "AUTH0_DB_CONNECTION"
+          value = var.AUTH0_DB_CONNECTION
+        },
+        {
+          name  = "FLASK_SECRET_KEY"
+          value = var.FLASK_SECRET_KEY
+        },
+        {
+          name  = "GOOGLE_OAUTH_CLIENT_ID"
+          value = var.GOOGLE_OAUTH_CLIENT_ID
+        },
+        {
+          name  = "GOOGLE_OAUTH_CLIENT_SECRET"
+          value = var.GOOGLE_OAUTH_CLIENT_SECRET
+        },
+        {
+          name  = "BACKEND_API_URL"
+          value = var.BACKEND_API_URL
+        },
+        {
+          name  = "SERVICE_URL"
+          value = var.AUTH_SERVICE_URL
         }
       ]
 
@@ -325,6 +394,23 @@ resource "aws_service_discovery_service" "nginx_proxy" {
 resource "aws_service_discovery_service" "location" {
   name        = "${var.project_name}-location-${var.env}"
   description = "Discovery service for ${var.project_name} Location Service ${var.env} "
+
+  dns_config {
+    namespace_id = aws_service_discovery_private_dns_namespace.main.id
+
+    dns_records {
+      ttl  = 15
+      type = "A"
+    }
+  }
+  health_check_custom_config {
+    failure_threshold = 1
+  }
+}
+
+resource "aws_service_discovery_service" "auth" {
+  name        = "${var.project_name}-auth-${var.env}"
+  description = "Discovery service for ${var.project_name} Auth Service ${var.env} "
 
   dns_config {
     namespace_id = aws_service_discovery_private_dns_namespace.main.id

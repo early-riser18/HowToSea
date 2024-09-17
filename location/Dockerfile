@@ -1,4 +1,4 @@
-FROM python:3.10-bookworm as base
+FROM python:3.10-slim-bookworm as base
 ARG WORKDIR=/app
 # Build context expected to be root directory
 RUN apt-get -y upgrade && apt-get -y update

@@ -1,11 +1,11 @@
 
 
 resource "aws_ecs_service" "location" {
-  name            = "location"
-  cluster         = aws_ecs_cluster.main.id
-  task_definition = aws_ecs_task_definition.location.arn
-  launch_type     = "FARGATE"
-
+  name                               = "location"
+  cluster                            = aws_ecs_cluster.main.id
+  task_definition                    = aws_ecs_task_definition.location.arn
+  launch_type                        = "FARGATE"
+  deployment_minimum_healthy_percent = 0
   network_configuration {
     subnets          = [aws_subnet.ecs_public_subnet_0.id]
     security_groups  = [aws_security_group.ecs_security_group.id]
@@ -15,6 +15,26 @@ resource "aws_ecs_service" "location" {
     registry_arn = aws_service_discovery_service.location.arn
   }
   desired_count = 0
+}
+
+
+resource "aws_ecs_service" "auth" {
+  name                               = "auth"
+  cluster                            = aws_ecs_cluster.main.id
+  task_definition                    = aws_ecs_task_definition.auth.arn
+  launch_type                        = "FARGATE"
+  deployment_minimum_healthy_percent = 0
+  network_configuration {
+    subnets          = [aws_subnet.ecs_public_subnet_0.id]
+    security_groups  = [aws_security_group.ecs_security_group.id]
+    assign_public_ip = true
+  }
+  service_registries {
+    registry_arn = aws_service_discovery_service.auth.arn
+  }
+  desired_count = 0
+
+
 }
 
 
