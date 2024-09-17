@@ -29,10 +29,6 @@ jobs:
             - name: Checkout Code
               uses: actions/checkout@v3
             
-            - name: Set environment variables
-              run: |
-                export ECR_ROOT=${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com
-
             - name: Create .env file
               run: |
                 touch .env
@@ -64,10 +60,12 @@ jobs:
 
             - name: Tag Docker image
               run: |
+                export ECR_ROOT=${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com
                 docker tag ${{ env.IMG_NAME }}:${{ env.IMG_TAG }} ${ECR_ROOT}/${{ env.ECR_REPOSITORY }}:${{env.IMG_NAME}}-${{ env.IMG_TAG }}
 
         
             # Push the image to ECR
             - name: Push Docker image to ECR
               run: |
+                export ECR_ROOT=${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com
                 docker push ${ECR_ROOT}/${{ env.ECR_REPOSITORY }}:${{env.IMG_NAME}}-${{ env.IMG_TAG }}
