@@ -2,7 +2,8 @@ from flask import Flask, request, redirect, jsonify
 from authlib.integrations.flask_client import OAuth
 from os import environ
 import json
-from src.utils import signup_user
+from flask import Flask, request, redirect, jsonify
+from src.utils import (signup_user, password_login)
 from src.oauth import OAuthJWT, Auth0ServiceProvider
 from auth0.exceptions import Auth0Error
 import requests
@@ -38,6 +39,26 @@ def signup():
             case _:
                 error = "UnknownError"
         return {"error": error}, 409
+    except Exception as e:
+        app.logger.error(e, exc_info=True)
+        return "An error occured. Try again later.", 500
+
+    return res, 200
+
+
+@app.route("/login", methods=["POST"])
+def login():
+
+    request_body = json.loads(request.get_data())
+    try:
+        username = request_body["username"]
+        password = request_body["password"]
+
+    except KeyError:
+        return "Missing required values", 400
+
+    try:
+        res = password_login(username, password)
     except Exception as e:
         app.logger.error(e, exc_info=True)
         return "An error occured. Try again later.", 500

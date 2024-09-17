@@ -37,6 +37,15 @@ def signup_user(username: str, email: str, password: str) -> dict[str]:
     )
 
 
+def password_login(username: str, password: str) -> dict[str]:
+    return auth0_token_endpoint.login(
+        username=username,
+        password=password,
+        grant_type="password",
+        audience=environ.get("BACKEND_API_URL"),
+    )
+
+
 def test_password_strength(password: str) -> bool:
     """Implements tests according to the Auth0 password policy in place"""
 
