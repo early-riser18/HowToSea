@@ -1,12 +1,9 @@
-from flask import Flask, request, redirect, jsonify
-from authlib.integrations.flask_client import OAuth
 from os import environ
 import json
 from flask import Flask, request, redirect, jsonify
 from src.utils import (signup_user, password_login)
 from src.oauth import OAuthJWT, Auth0ServiceProvider
-from auth0.exceptions import Auth0Error
-import requests
+
 
 app = Flask(__name__)
 app.secret_key = environ.get("FLASK_SECRET_KEY")
@@ -67,7 +64,7 @@ def login():
 
 
 @app.route("/oauth/authorize")
-def oauth_signup():
+def oauth_authorize():
     """
     Redirects to the appropriate authorization URL based on the service provider.
     Expects the 'provider' and 'connection' query parameters.
@@ -103,10 +100,9 @@ def oauth_callback():
     Handles the OAuth callback by processing the authorization code provided by the OAuth provider.
 
     This function performs the following steps:
-    1. Validates the presence of the authorization code in the request arguments.
-    2. Retrieves the token using the authorization code.
-    3. Extracts and verifies the access token from the retrieved token.
-    4. Returns a JSON response containing the access token, token type, and expiration time.
+    1. Retrieves the token using the authorization code.
+    2. Extracts and verifies the access token from the retrieved token.
+    3. Returns a JSON response containing the access token, token type, and expiration time.
 
     Returns:
         Response: A JSON response containing the access token, token type, and expiration time.
@@ -139,23 +135,3 @@ def oauth_callback():
 @app.route("/")
 def hello_world():
     return "Hello, World!"
-
-
-"""
-What I need for OAuth flow
-- Endpoint for signup with specific provider (can use query param) and which redirects to oauth resource owner authentication page.
-- Callback URL that expects an authorization code passed and which then requests an access token
-- Once id_token is received: 1. Validate important points in it: 
-    The token’s signature to ensure it was signed by Google.
-	•	The iss (issuer) claim to verify it was issued by https://accounts.google.com or accounts.google.com.
-	•	The aud (audience) claim to ensure it matches your client_id.
-	•	The exp (expiration time) to make sure the token is still valid.
-
-Then, extract the email address to match against your database.
-    - if email already exist with current provider, perform a sign in
-    - If email already exist but with different provider, check from where and inform user to log in via that mean
-    - if email does not exist, create user and return your own Authorization JWT (signed by yourself)
-
-
-
-"""

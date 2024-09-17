@@ -1,9 +1,11 @@
-from os import environ
+import abc
 import requests
+import logging
+from os import environ
 from jose import jwt, JWTError
 from typing import Any
-import abc
 
+logger = logging.getLogger("app")
 SUPPORTED_OAUTH_PROVIDERS = {f"https://{environ.get('AUTH0_DOMAIN')}/": "AUTH0"}
 
 
@@ -17,7 +19,6 @@ class OAuthServiceProvider(metaclass=abc.ABCMeta):
         self._jwks = None
         self.scope = "email openid profile"
         self.audience = environ.get("BACKEND_API_URL")
-        self.connection = None  # Auth0 specific, needs refactoring
         self.authorization_url = None
         self.token_url = None
         self.client_id = None
@@ -41,25 +42,18 @@ class OAuthServiceProvider(metaclass=abc.ABCMeta):
         pass
 
     def __get_jwks(self) -> Any:
-        # Get the JWKS keys from Auth0
         jwks = requests.get(self.jwks_endpoint).json()
         return jwks
 
-    def get_authorization_url(self, **kwargs) -> str:
-
-        if kwargs["connection"] == "GOOGLE":
-            connection = "google-oauth2"
-        else:
-            raise ValueError("Invalid id_provider value")
-
+    def get_authorization_url(self, additional_params: str = "", **kwargs) -> str:
         return (
             f"{self.authorization_url}?"
             f"response_type=code&"
             f"client_id={self.client_id}&"
-            f"connection={connection}&"
             f"redirect_uri={self.redirect_uri}&"
             f"scope={self.scope}&"
-            f"audience={self.audience}"
+            f"audience={self.audience}&"
+            f"{additional_params}"
         )
 
     def retrieve_token(self, authorization_code: str) -> Any:
@@ -111,6 +105,15 @@ class Auth0ServiceProvider(OAuthServiceProvider):
     @property
     def issuer_url(self):
         return f"https://{environ.get('AUTH0_DOMAIN')}/"
+
+    def get_authorization_url(self, additional_params: str = "", **kwargs) -> str:
+
+        if kwargs["connection"] == "GOOGLE":
+            additional_params += "connection=google-oauth2&"
+        else:
+            raise ValueError("Invalid id_provider value")
+        additional_params += "prompt=select_account&"
+        return super().get_authorization_url(additional_params, **kwargs)
 
 
 class OAuthJWT:
@@ -191,7 +194,9 @@ class OAuthJWT:
 
 if __name__ == "__main__":
 
-    authorization_code = "J2xN28BSeaFBOPMUwjGGj1L-mDKQTthdiANZLjufh23YM"
-    unverified_token = get_token_from_authorization_code(authorization_code)
+    # authorization_code = "J2xN28BSeaFBOPMUwjGGj1L-mDKQTthdiANZLjufh23YM"
+    # unverified_token = get_token_from_authorization_code(authorization_code)
+    # OAuthJWT(unverified_token["access_token"])
 
-    OAuthJWT(unverified_token["access_token"])
+    auth0_token = "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6ImppeFNaX1puRHdWVXNnMTA1TzZMUyJ9.eyJpc3MiOiJodHRwczovL2Vhcmx5LXJpc2VyMTguZXUuYXV0aDAuY29tLyIsInN1YiI6ImF1dGgwfDY2ZTkwODM3NmZmZmE5YzU1YjA4MDQyYyIsImF1ZCI6Imh0dHBzOi8vbG9jYWxob3N0IiwiaWF0IjoxNzI2NTQ4MTc1LCJleHAiOjE3MjY2MzQ1NzUsImd0eSI6InBhc3N3b3JkIiwiYXpwIjoibzVFZDVGM1BEVFQ2MWtuNUpuTVhkZlRuZHp5andUa0sifQ.crLUcsfDbh5g7QMneQMk1ERlmM0uYy3_9wh2c0EpC0xUwkHRXHMy_K_4KCgLYUFkYX9LknWSXDRgp2tw9vZRQiLR8ASoSmLAaTkZ2-nqOoiEEeLpFATv9B1KSHgbtk0LhqJL75EzwpISd0PyqKie6eWs80M4aLhiHzW7KYcjvhivuum53HLri7F04A7VdrUGz0kTBazeZemUmJg9XGYf9eW2rS_ZhgdzZyn78Vj--bnHiZDvVtl9wvFJNCpD_fgXnkHlMBOi0bLU5j12K6OO47uxy_N2dbk5uphEt0A-rAxhDh48Nedre6w-VehdRxqmOVQR1ukhdh7AgPZ3a_y2wg"
+    OAuthJWT(auth0_token)
