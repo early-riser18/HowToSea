@@ -464,7 +464,7 @@ resource "aws_iam_policy" "lambda_api_permissions" {
       {
         Effect   = "Allow"
         Action   = ["ecs:UpdateService", "ecs:DescribeServices"],
-        Resource = ["arn:aws:ecs:ap-northeast-1:211125707335:service/how-to-sea-prod/location"]
+        Resource = ["arn:aws:ecs:ap-northeast-1:211125707335:service/how-to-sea-prod/location", "arn:aws:ecs:ap-northeast-1:211125707335:service/how-to-sea-prod/auth"]
       },
       {
         Effect = "Allow"

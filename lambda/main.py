@@ -4,7 +4,7 @@ import time
 import logging
 import os
 
-SERVICE_NAMES = ["location"]
+SERVICE_NAMES = ["location", "auth"]
 CLUSTER_NAME = "how-to-sea-prod"
 
 if len(logging.getLogger().handlers) > 0:
