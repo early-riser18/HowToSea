@@ -2,23 +2,20 @@ from auth0.authentication import Database, GetToken
 from auth0.management import Auth0
 from os import environ
 
-import dotenv
-
-dotenv.load_dotenv(".env.local")
 database = Database(environ.get("AUTH0_DOMAIN"), environ.get("AUTH0_CLIENT_ID"))
-get_token = GetToken(
+auth0_token_endpoint = GetToken(
     environ.get("AUTH0_DOMAIN"),
     environ.get("AUTH0_CLIENT_ID"),
     environ.get("AUTH0_CLIENT_SECRET"),
 )
 
-token = get_token.client_credentials(
+client_token = auth0_token_endpoint.client_credentials(
     "https://{}/api/v2/".format(environ.get("AUTH0_DOMAIN"))
 )
-auth0 = Auth0(environ.get("AUTH0_DOMAIN"), token["access_token"])
+auth0 = Auth0(environ.get("AUTH0_DOMAIN"), client_token["access_token"])
 
 
-def signup_user(username: str, email: str, password: str) -> dict[str]:
+def password_signup(username: str, email: str, password: str) -> dict[str]:
 
     if check_if_username_already_exists(username):
         raise ValueError("username")
@@ -73,3 +70,8 @@ def login_with_jwt(jwt: str):
 
     # Look for email address is db. if not found perform signup. If found, check provider and sign in or ask to use correct provider
     pass
+
+
+if __name__ == "__main__":
+    print(client_token["access_token"])
+    auth0.users.list(q=f'username:"test"')

@@ -1,7 +1,7 @@
 from os import environ
 import json
 from flask import Flask, request, redirect, jsonify
-from src.utils import (signup_user, password_login)
+from src.utils import signup_user, password_login
 from src.oauth import OAuthJWT, Auth0ServiceProvider
 
 
@@ -24,7 +24,7 @@ def signup():
         return "Missing required values", 400
 
     try:
-        res = signup_user(username, email, password)
+        res = password_signup(username, email, password)
     except ValueError as e:
         match str(e):
             case "email":
