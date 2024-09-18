@@ -7,6 +7,8 @@ COPY requirements.txt .
 RUN pip3 --no-cache-dir install -r requirements.txt
 
 FROM base
+ARG ENV_FILE=.env
+COPY $ENV_FILE ./.env
 COPY app.py gunicorn.conf.py ./
 COPY src/ ./src
 COPY schema/ ./schema

@@ -1,0 +1,111 @@
+name: Build and Deploy Services to AWS
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  AWS_ACCOUNT_ID: 211125707335
+  AWS_REGION: ap-northeast-1
+  ECS_DOCKER_ARCHITECTURE: linux/amd64
+  ENV_SHORT: prod
+  ECR_REPOSITORY: how-to-sea-prod
+  ECS_CLUSTER_NAME: how-to-sea-prod
+
+jobs:
+  build_and_deploy:
+    runs-on: ubuntu-latest
+    environment: Production
+    strategy:
+      matrix:
+        service:
+          - name: nginx-proxy
+            service_name: nginx-proxy
+            img_name: nginx-proxy
+            img_tag: latest
+            working_dir: ./nginx
+
+          - name: location
+            service_name: location
+            img_name: location
+            img_tag: latest
+            working_dir: ./location
+            
+          - name: auth
+            service_name: auth
+            img_name: auth
+            img_tag: latest
+            working_dir: ./auth
+
+
+    defaults:
+      run:
+        working-directory: ${{ matrix.service.working_dir }}
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Create location service .env file
+        if:  matrix.service.name == 'location'
+        run: |
+          echo "MONGODB_USER=${{ vars.LOCATION_MONGODB_USER }}" > .env
+          echo "MONGODB_DB_NAME=${{ vars.LOCATION_MONGODB_DB_NAME }}" >> .env
+          echo "MONGODB_PW=${{ secrets.LOCATION_MONGODB_PW }}" >> .env
+
+      - name: Create nginx service .env file
+        if:  matrix.service.name == 'nginx-proxy'
+        run: |
+          echo "DNS_ADDRESS=${{ vars.NGINX_DNS_ADDRESS }}" > .env
+          echo "AUTH_HOSTNAME=${{ vars.NGINX_AUTH_HOSTNAME }}" >> .env
+          echo "LOCATION_HOSTNAME=${{ vars.NGINX_LOCATION_HOSTNAME }}" >> .env
+          echo "LAMBDA_API_URL=${{ vars.LAMBDA_API_URL }}" >> .env
+      
+      - name: Create auth service secrets to .env
+        if:  matrix.service.name == 'auth'
+        run: |
+          echo "AUTH0_CLIENT_ID=${{ vars.AUTH0_CLIENT_ID }}" >> .env
+          echo "AUTH0_DOMAIN=${{ vars.AUTH0_DOMAIN }}" >> .env
+          echo "AUTH0_DB_CONNECTION=${{ vars.AUTH0_DB_CONNECTION }}" >> .env
+          echo "GOOGLE_OAUTH_CLIENT_ID=${{ vars.AUTH_GOOGLE_OAUTH_CLIENT_ID }}" >> .env
+          echo "BACKEND_API_URL=${{ vars.BACKEND_API_URL }}" >> .env
+          echo "SERVICE_URL=${{ vars.AUTH_SERVICE_URL }}" >> .env
+          echo "AUTH0_CLIENT_SECRET=${{ secrets.AUTH0_CLIENT_SECRET }}" >> .env
+          echo "FLASK_SECRET_KEY=${{ secrets.AUTH_FLASK_SECRET_KEY }}" >> .env
+          echo "GOOGLE_OAUTH_CLIENT_SECRET=${{ secrets.AUTH_GOOGLE_OAUTH_CLIENT_SECRET }}" >> .env
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ vars.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Log in to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Build Docker image
+        run: |
+          docker build --platform ${{ env.ECS_DOCKER_ARCHITECTURE }} --build-arg ENV_FILE=.env \
+            -t ${{ matrix.service.img_name }}:${{ matrix.service.img_tag }} -f ./Dockerfile .
+
+      - name: Tag Docker image
+        run: |
+          ECR_ROOT=${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com
+          docker tag ${{ matrix.service.img_name }}:${{ matrix.service.img_tag }} \
+            ${ECR_ROOT}/${{ env.ECR_REPOSITORY }}:${{ matrix.service.img_name }}-${{ matrix.service.img_tag }}
+
+      - name: Push Docker image to ECR
+        run: |
+          ECR_ROOT=${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com
+          docker push ${ECR_ROOT}/${{ env.ECR_REPOSITORY }}:${{ matrix.service.img_name }}-${{ matrix.service.img_tag }}
+
+      - name: Deploy to ECS
+        run: |
+          aws ecs update-service \
+            --cluster ${{ env.ECS_CLUSTER_NAME }} \
+            --service ${{ matrix.service.service_name }} \
+            --region ${{ env.AWS_REGION }} \
+            --force-new-deployment

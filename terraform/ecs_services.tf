@@ -39,10 +39,11 @@ resource "aws_ecs_service" "auth" {
 
 
 resource "aws_ecs_service" "nginx_proxy_ec2" {
-  name            = "nginx-proxy"
-  cluster         = aws_ecs_cluster.main.id
-  task_definition = aws_ecs_task_definition.nginx_proxy.arn
-  launch_type     = "EC2"
+  name                               = "nginx-proxy"
+  cluster                            = aws_ecs_cluster.main.id
+  task_definition                    = aws_ecs_task_definition.nginx_proxy.arn
+  launch_type                        = "EC2"
+  deployment_minimum_healthy_percent = 0
 
   service_registries {
     registry_arn   = aws_service_discovery_service.nginx_proxy.arn

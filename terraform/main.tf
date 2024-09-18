@@ -116,25 +116,6 @@ resource "aws_ecs_task_definition" "nginx_proxy" {
       image     = "211125707335.dkr.ecr.ap-northeast-1.amazonaws.com/${var.project_name}-${var.env}:nginx-proxy-latest"
       essential = true
 
-      environment = [
-        { name  = "DNS_ADDRESS"
-          value = "10.0.0.2" # X.X.X.2 is AWS Route 53 DNS address
-        },
-        {
-          name  = "LOCATION_HOSTNAME"
-          value = "${var.project_name}-location-${var.env}.${var.project_name}-${var.env}"
-        },
-        {
-          name = "LAMBDA_API_URL"
-          #hardcoded because it must not contain trailing slash for compatibility with local lambda endpoint
-          value = "https://gnybkd4pd2d2rl2mecaoi54ksa0urmku.lambda-url.ap-northeast-1.on.aws"
-
-        },
-        {
-          name  = "AUTH_HOSTNAME"
-          value = "${var.project_name}-auth-${var.env}.${var.project_name}-${var.env}"
-        }
-      ]
       portMappings = [
         {
           containerPort = 80
@@ -187,17 +168,6 @@ resource "aws_ecs_task_definition" "location" {
       image     = "211125707335.dkr.ecr.ap-northeast-1.amazonaws.com/${var.project_name}-${var.env}:location-latest"
       essential = true
 
-      environment = [
-        { name  = "MONGODB_USER"
-          value = var.MONGODB_USER
-        },
-        { name  = "MONGODB_PW"
-          value = var.MONGODB_PW
-        },
-        { name  = "MONGODB_DB"
-          value = var.MONGODB_LOCATION_DB
-        }
-      ]
 
       logConfiguration = {
         logDriver = "awslogs"
@@ -225,44 +195,6 @@ resource "aws_ecs_task_definition" "auth" {
       image     = "211125707335.dkr.ecr.ap-northeast-1.amazonaws.com/${var.project_name}-${var.env}:auth-latest"
       essential = true
 
-      environment = [
-        {
-          name  = "AUTH0_CLIENT_ID"
-          value = var.AUTH0_CLIENT_ID
-        },
-        {
-          name  = "AUTH0_CLIENT_SECRET"
-          value = var.AUTH0_CLIENT_SECRET
-        },
-        {
-          name  = "AUTH0_DOMAIN"
-          value = var.AUTH0_DOMAIN
-        },
-        {
-          name  = "AUTH0_DB_CONNECTION"
-          value = var.AUTH0_DB_CONNECTION
-        },
-        {
-          name  = "FLASK_SECRET_KEY"
-          value = var.FLASK_SECRET_KEY
-        },
-        {
-          name  = "GOOGLE_OAUTH_CLIENT_ID"
-          value = var.GOOGLE_OAUTH_CLIENT_ID
-        },
-        {
-          name  = "GOOGLE_OAUTH_CLIENT_SECRET"
-          value = var.GOOGLE_OAUTH_CLIENT_SECRET
-        },
-        {
-          name  = "BACKEND_API_URL"
-          value = var.BACKEND_API_URL
-        },
-        {
-          name  = "SERVICE_URL"
-          value = var.AUTH_SERVICE_URL
-        }
-      ]
 
       logConfiguration = {
         logDriver = "awslogs"

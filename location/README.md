@@ -7,3 +7,10 @@
 
 1. source .env #make sure to create one
 2. run `python3 -m unittest discover -s test -p "*_test.py"`
+
+**Environment**
+```bash
+MONGODB_USER=
+MONGODB_PW=  
+MONGODB_DB_NAME=
+```
