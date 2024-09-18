@@ -4,9 +4,10 @@ services:
     build:
       context: ./nginx
       dockerfile: Dockerfile
+      args:
+        - ENV_FILE=.env
+
     image: nginx-server:latest
-    env_file:
-      - './nginx/.env'
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/conf.d/default.template
       - ./nginx/mock_letsencrypt:/etc/letsencrypt:ro
@@ -21,7 +22,7 @@ services:
       context: ./location
       dockerfile: Dockerfile
       args:
-        ENV_FILE: .env.local
+        - ENV_FILE=.env.local
     image: how-to-sea-location
     ports:
       - '8888:8000'
@@ -36,11 +37,11 @@ services:
     build:
       context: ./auth
       dockerfile: Dockerfile
+      args:
+        - ENV_FILE=.env.local
     image: how-to-sea-auth
     ports:
       - '8889:8000'
-    env_file:
-      - './auth/.env.local'
     working_dir: /app_dev
     command: ["gunicorn", "--config", "/app_dev/gunicorn.conf.py", "app:app"]
     volumes:

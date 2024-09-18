@@ -8,21 +8,6 @@ variable "env" {
   type        = string
 }
 
-variable "MONGODB_USER" {
-  description = "Username for Mongo connection string"
-  type        = string
-}
-
-variable "MONGODB_PW" {
-  description = "Password for Mongo connection string"
-  type        = string
-}
-
-variable "MONGODB_LOCATION_DB" {
-  description = "Database name for Location service"
-  type        = string
-}
-
 variable "project_name" {
   type    = string
   default = "how-to-sea"
