@@ -39,6 +39,19 @@ jobs:
             env_content: |
               MONGODB_USER=${{ vars.LOCATION_MONGODB_USER }}
               MONGODB_DB_NAME=${{ vars.LOCATION_MONGODB_DB_NAME }}
+          - name: auth
+            service_name: auth
+            img_name: auth
+            img_tag: latest
+            working_dir: ./auth
+            env_content: |
+              AUTH0_CLIENT_ID=${{ vars.AUTH0_CLIENT_ID }}
+              AUTH0_DOMAIN=${{ vars.AUTH0_DOMAIN }}
+              AUTH0_DB_CONNECTION=${{ vars.AUTH0_DB_CONNECTION }}
+              GOOGLE_OAUTH_CLIENT_ID=${{vars.AUTH_GOOGLE_OAUTH_CLIENT_ID }}
+              BACKEND_API_URL=${{ vars.BACKEND_API_URL }}
+              SERVICE_URL=${{ vars.AUTH_SERVICE_URL}}
+
 
     defaults:
       run:
@@ -55,6 +68,13 @@ jobs:
       - name: Add location service secrets to .env
         if:  matrix.service.name == 'location'
         run: echo "MONGODB_PW=${{ secrets.LOCATION_MONGODB_PW }}" >> .env
+
+      - name: Add auth service secrets to .env
+        if:  matrix.service.name == 'auth'
+        run: |
+          echo "AUTH0_CLIENT_SECRET=${{ secrets.AUTH0_CLIENT_SECRET }}" >> .env
+          echo "FLASK_SECRET_KEY=${{ secrets.AUTH_FLASK_SECRET_KEY }}" >> .env
+          echo "GOOGLE_OAUTH_CLIENT_SECRET=${{ secrets.AUTH_GOOGLE_OAUTH_CLIENT_SECRET }}" >> .env
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v2

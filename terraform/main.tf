@@ -195,44 +195,6 @@ resource "aws_ecs_task_definition" "auth" {
       image     = "211125707335.dkr.ecr.ap-northeast-1.amazonaws.com/${var.project_name}-${var.env}:auth-latest"
       essential = true
 
-      environment = [
-        {
-          name  = "AUTH0_CLIENT_ID"
-          value = var.AUTH0_CLIENT_ID
-        },
-        {
-          name  = "AUTH0_CLIENT_SECRET"
-          value = var.AUTH0_CLIENT_SECRET
-        },
-        {
-          name  = "AUTH0_DOMAIN"
-          value = var.AUTH0_DOMAIN
-        },
-        {
-          name  = "AUTH0_DB_CONNECTION"
-          value = var.AUTH0_DB_CONNECTION
-        },
-        {
-          name  = "FLASK_SECRET_KEY"
-          value = var.FLASK_SECRET_KEY
-        },
-        {
-          name  = "GOOGLE_OAUTH_CLIENT_ID"
-          value = var.GOOGLE_OAUTH_CLIENT_ID
-        },
-        {
-          name  = "GOOGLE_OAUTH_CLIENT_SECRET"
-          value = var.GOOGLE_OAUTH_CLIENT_SECRET
-        },
-        {
-          name  = "BACKEND_API_URL"
-          value = var.BACKEND_API_URL
-        },
-        {
-          name  = "SERVICE_URL"
-          value = var.AUTH_SERVICE_URL
-        }
-      ]
 
       logConfiguration = {
         logDriver = "awslogs"
