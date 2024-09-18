@@ -168,17 +168,6 @@ resource "aws_ecs_task_definition" "location" {
       image     = "211125707335.dkr.ecr.ap-northeast-1.amazonaws.com/${var.project_name}-${var.env}:location-latest"
       essential = true
 
-      environment = [
-        { name  = "MONGODB_USER"
-          value = var.MONGODB_USER
-        },
-        { name  = "MONGODB_PW"
-          value = var.MONGODB_PW
-        },
-        { name  = "MONGODB_DB"
-          value = var.MONGODB_LOCATION_DB
-        }
-      ]
 
       logConfiguration = {
         logDriver = "awslogs"

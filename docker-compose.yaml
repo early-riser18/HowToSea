@@ -20,18 +20,18 @@ services:
     build:
       context: ./location
       dockerfile: Dockerfile
+      args:
+        ENV_FILE: .env.local
     image: how-to-sea-location
-    environment:
-      - MONGODB_PW=${MONGODB_PW}
-      - MONGODB_USER=${MONGODB_USER}
-      - MONGODB_DB=${MONGODB_DB}
-    volumes:
-    - ./location:/app_dev
     ports:
       - '8888:8000'
+    working_dir: /app_dev
     command: ["gunicorn", "--config", "/app_dev/gunicorn.conf.py", "app:app"]
+    volumes:
+    - ./location:/app_dev
     networks:
       - network1
+      
   auth:
     build:
       context: ./auth

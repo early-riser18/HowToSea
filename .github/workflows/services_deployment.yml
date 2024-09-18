@@ -1,80 +1,98 @@
 name: Build and Deploy Services to AWS
-on:
 
-    push:
-        branches:
-        - '**'
-    workflow_dispatch:
+on:
+  push:
+    branches:
+      - '**'
+  workflow_dispatch:
+
 env:
-    AWS_ACCOUNT_ID: 211125707335
-    AWS_REGION: ap-northeast-1
-    ECS_DOCKER_ARCHITECTURE: linux/amd64
-    ENV_SHORT: prod
-    ECR_REPOSITORY: how-to-sea-prod
-    ECS_CLUSTER_NAME: how-to-sea-prod
+  AWS_ACCOUNT_ID: 211125707335
+  AWS_REGION: ap-northeast-1
+  ECS_DOCKER_ARCHITECTURE: linux/amd64
+  ENV_SHORT: prod
+  ECR_REPOSITORY: how-to-sea-prod
+  ECS_CLUSTER_NAME: how-to-sea-prod
 
 jobs:
+  build_and_deploy:
+    runs-on: ubuntu-latest
+    environment: Production
+    strategy:
+      matrix:
+        service:
+          - name: nginx-proxy
+            service_name: nginx-proxy
+            img_name: nginx-proxy
+            img_tag: latest
+            working_dir: ./nginx
+            env_vars:
+              DNS_ADDRESS: ${{ vars.NGINX_DNS_ADDRESS }}
+              AUTH_HOSTNAME: ${{ vars.NGINX_AUTH_HOSTNAME }}
+              LOCATION_HOSTNAME: ${{ vars.NGINX_LOCATION_HOSTNAME }}
+              LAMBDA_API_URL: ${{ vars.LAMBDA_API_URL }}
+          - name: location
+            service_name: location
+            img_name: location
+            img_tag: latest
+            working_dir: ./location
+            env_vars:
+              MONGODB_USER: ${{ vars.LOCATION_MONGODB_USER }}
+              MONGODB_DB_NAME: ${{ vars.LOCATION_MONGODB_DB_NAME }}
+            # We will handle secrets separately
+    defaults:
+      run:
+        working-directory: ${{ matrix.service.working_dir }}
 
-    build_deploy_nginx:
-        runs-on: ubuntu-latest
-        environment: Production
-        env:
-            IMG_NAME: nginx-proxy
-            IMG_TAG: latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
 
-        defaults:
-            run:
-                working-directory: ./nginx
+      - name: Create .env file
+        shell: bash
+        run: |
+          touch .env
+          # Write non-secret environment variables
+          {% for key, value in matrix.service.env_vars.items() %}
+          echo "{{ key }}={{ value }}" >> .env
+          {% endfor %}
+          
+          # Handle secrets separately
+          if [ "${{ matrix.service.name }}" == "location" ]; then
+            echo "MONGODB_PW=${{ secrets.LOCATION_MONGODB_PW }}" >> .env
+          fi
 
-        steps:
-            - name: Checkout Code
-              uses: actions/checkout@v3
-            
-            - name: Create .env file
-              run: |
-                touch .env
-                echo "DNS_ADDRESS=${{vars.NGINX_DNS_ADDRESS}}" >> .env
-                echo "AUTH_HOSTNAME=${{vars.NGINX_AUTH_HOSTNAME}}" >> .env
-                echo "LOCATION_HOSTNAME=${{vars.NGINX_LOCATION_HOSTNAME}}" >> .env
-                echo "LAMBDA_API_URL=${{vars.LAMBDA_API_URL}}" >> .env
-            
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ vars.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
 
-        # Set up AWS credentials using GitHub Secrets
-            - name: Configure AWS credentials
-              uses: aws-actions/configure-aws-credentials@v2
-              with:
-                  aws-access-key-id: ${{ vars.AWS_ACCESS_KEY_ID }}
-                  aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-                  aws-region: ${{ env.AWS_REGION}}
-                
-            # Log in to Amazon ECR
-            - name: Log in to Amazon ECR
-              id: login-ecr
-              uses: aws-actions/amazon-ecr-login@v1
+      - name: Log in to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
 
-            - name: Build Docker image
-              run: |
-                docker build --platform ${{ env.ECS_DOCKER_ARCHITECTURE }} --build-arg ENV_FILE=.env \
-                 -t ${{ env.IMG_NAME }}:${{ env.IMG_TAG }} -f ./Dockerfile .
-                        # Tag the image for ECR
+      - name: Build Docker image
+        run: |
+          docker build --platform ${{ env.ECS_DOCKER_ARCHITECTURE }} --build-arg ENV_FILE=.env \
+            -t ${{ matrix.service.img_name }}:${{ matrix.service.img_tag }} -f ./Dockerfile .
 
+      - name: Tag Docker image
+        run: |
+          ECR_ROOT=${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com
+          docker tag ${{ matrix.service.img_name }}:${{ matrix.service.img_tag }} \
+            ${ECR_ROOT}/${{ env.ECR_REPOSITORY }}:${{ matrix.service.img_name }}-${{ matrix.service.img_tag }}
 
-            - name: Tag Docker image
-              run: |
-                export ECR_ROOT=${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com
-                docker tag ${{ env.IMG_NAME }}:${{ env.IMG_TAG }} ${ECR_ROOT}/${{ env.ECR_REPOSITORY }}:${{env.IMG_NAME}}-${{ env.IMG_TAG }}
+      - name: Push Docker image to ECR
+        run: |
+          ECR_ROOT=${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com
+          docker push ${ECR_ROOT}/${{ env.ECR_REPOSITORY }}:${{ matrix.service.img_name }}-${{ matrix.service.img_tag }}
 
-        
-            # Push the image to ECR
-            - name: Push Docker image to ECR
-              run: |
-                export ECR_ROOT=${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com
-                docker push ${ECR_ROOT}/${{ env.ECR_REPOSITORY }}:${{env.IMG_NAME}}-${{ env.IMG_TAG }}
-            
-            - name: Deploy to ECS
-              run: |
-                    aws ecs update-service \
-                      --cluster ${{ env.ECS_CLUSTER_NAME }} \
-                      --service nginx-proxy \
-                      --region ${{ env.AWS_REGION }} \
-                      --force-new-deployment 
+      - name: Deploy to ECS
+        run: |
+          aws ecs update-service \
+            --cluster ${{ env.ECS_CLUSTER_NAME }} \
+            --service ${{ matrix.service.service_name }} \
+            --region ${{ env.AWS_REGION }} \
+            --force-new-deployment
