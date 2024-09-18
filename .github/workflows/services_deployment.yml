@@ -3,8 +3,7 @@ name: Build and Deploy Services to AWS
 on:
   push:
     branches:
-      - '**'
-  workflow_dispatch:
+      - main
 
 env:
   AWS_ACCOUNT_ID: 211125707335
