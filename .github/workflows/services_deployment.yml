@@ -26,32 +26,31 @@ jobs:
             img_name: nginx-proxy
             img_tag: latest
             working_dir: ./nginx
-            env_content: |
-              DNS_ADDRESS=${{ vars.NGINX_DNS_ADDRESS }}
-              AUTH_HOSTNAME=${{ vars.NGINX_AUTH_HOSTNAME }}
-              LOCATION_HOSTNAME=${{ vars.NGINX_LOCATION_HOSTNAME }}
-              LAMBDA_API_URL=${{ vars.LAMBDA_API_URL }}
+            env_content:
+              DNS_ADDRESS: ${{ vars.NGINX_DNS_ADDRESS }}
+              AUTH_HOSTNAME: ${{ vars.NGINX_AUTH_HOSTNAME }}
+              LOCATION_HOSTNAME: ${{ vars.NGINX_LOCATION_HOSTNAME }}
+              LAMBDA_API_URL: ${{ vars.LAMBDA_API_URL }}
           - name: location
             service_name: location
             img_name: location
             img_tag: latest
             working_dir: ./location
-            env_content: |
-              MONGODB_USER=${{ vars.LOCATION_MONGODB_USER }}
-              MONGODB_DB_NAME=${{ vars.LOCATION_MONGODB_DB_NAME }}
+            env_content:
+              MONGODB_USER: ${{ vars.LOCATION_MONGODB_USER }}
+              MONGODB_DB_NAME: ${{ vars.LOCATION_MONGODB_DB_NAME }}
           - name: auth
             service_name: auth
             img_name: auth
             img_tag: latest
             working_dir: ./auth
-            env_content: |
-              ${{ vars.AUTH0_CLIENT_ID }}
-              AUTH0_CLIENT_ID=${{ vars.AUTH0_CLIENT_ID }}
-              AUTH0_DOMAIN=${{ vars.AUTH0_DOMAIN }}
-              AUTH0_DB_CONNECTION=${{ vars.AUTH0_DB_CONNECTION }}
-              GOOGLE_OAUTH_CLIENT_ID=${{vars.AUTH_GOOGLE_OAUTH_CLIENT_ID }}
-              BACKEND_API_URL=${{ vars.BACKEND_API_URL }}
-              SERVICE_URL=${{ vars.AUTH_SERVICE_URL}}
+            env_content:
+              AUTH0_CLIENT_ID: ${{ vars.AUTH0_CLIENT_ID }}
+              AUTH0_DOMAIN: ${{ vars.AUTH0_DOMAIN }}
+              AUTH0_DB_CONNECTION: ${{ vars.AUTH0_DB_CONNECTION }}
+              GOOGLE_OAUTH_CLIENT_ID: ${{vars.AUTH_GOOGLE_OAUTH_CLIENT_ID }}
+              BACKEND_API_URL: ${{ vars.BACKEND_API_URL }}
+              SERVICE_URL: ${{ vars.AUTH_SERVICE_URL}}
 
 
     defaults:
@@ -65,7 +64,9 @@ jobs:
       - name: Create .env file
         run: |
           echo '${{ vars.AUTH0_CLIENT_ID }}'
-          echo "${{ matrix.service.env_content }}" > .env
+           for key, value in ${{ matrix.service.env_content }}; do
+            echo "$key=$value" >> .env
+          done
 
       - name: Add location service secrets to .env
         if:  matrix.service.name == 'location'
