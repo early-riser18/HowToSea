@@ -63,13 +63,11 @@ jobs:
 
       - name: Create .env file
         run: |
-          for key in "${!matrix_service_env_content[@]}"; do
-            echo "$key=${matrix_service_env_content[$key]}" >> .env
-          done
+            echo '${{ toJson(matrix.service.env_content) }}' | jq -r 'to_entries[] | "\(.key)=\(.value)"' >> .env
         shell: bash
-        env:
-          matrix_service_env_content: ${{ toJson(matrix.service.env_content) }}
 
+
+        
       - name: Add location service secrets to .env
         if:  matrix.service.name == 'location'
         run: echo "MONGODB_PW=${{ secrets.LOCATION_MONGODB_PW }}" >> .env
