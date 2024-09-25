@@ -1,4 +1,4 @@
-service Auth{
+service AuthTokenValidator{
     rpc ValidateToken(Token) returns (TokenStatus) {}
 }
 
