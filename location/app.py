@@ -5,6 +5,7 @@ from src.db_client import SpotDB
 from src.search import search_with_geospatial, get_recommended_spots
 from src.utils import SEARCH_PARAMS_TYPE, typecast_query_params, create_jsonapi_response
 from flask_cors import CORS
+from auth import login_required
 
 
 app = Flask(__name__)
@@ -29,13 +30,9 @@ def catch_all_exception(e):
     )
 
 
-@app.before_request
-def log_request_info():
-    app.logger.info("Headers: %s", request.headers)
-    app.logger.info("Body: %s", request.get_data())
-
 
 @app.route("/")
+@login_required()
 def hello_world():
     return create_jsonapi_response(200)
 
