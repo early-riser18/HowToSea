@@ -42,8 +42,9 @@ services:
     image: how-to-sea-auth
     ports:
       - '8889:8000'
+      - '50051:50051'
     working_dir: /app_dev
-    command: ["gunicorn", "--config", "/app_dev/gunicorn.conf.py", "app:app"]
+    command: ["./start.sh"]
     volumes:
       - ./auth:/app_dev
     networks:
