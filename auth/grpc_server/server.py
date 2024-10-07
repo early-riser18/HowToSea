@@ -14,7 +14,7 @@ class AuthTokenValidatorServicer(AuthTokenValidation_pb2_grpc.AuthTokenValidator
         try:
             OAuthJWT(request.token)
         except Exception as e:
-            logger.debug(e, exc_info=True)
+            logger.debug("Failed token validation: %s", e, exc_info=True)
             return TokenStatus(valid=0)
         return TokenStatus(valid=1)
     

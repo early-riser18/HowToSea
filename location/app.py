@@ -10,6 +10,7 @@ from auth import login_required
 
 app = Flask(__name__)
 CORS(app)
+app.logger.setLevel("DEBUG")
 # Instantiate DB connection
 spot_db = SpotDB.from_env()
 
@@ -18,8 +19,6 @@ spot_db = SpotDB.from_env()
 with open("./schema/search_spot.json") as schema_f:
     SEARCH_SPOT_SCHEMA = json.load(schema_f)
 
-# Configure logging
-app.logger.setLevel("DEBUG")
 
 
 @app.errorhandler(Exception)
@@ -28,7 +27,6 @@ def catch_all_exception(e):
     return create_jsonapi_response(
         500, message="Unable to handle this request at the moment."
     )
-
 
 
 @app.route("/")
@@ -50,17 +48,17 @@ def get_spot(spot_id):
         return create_jsonapi_response(500)
     return create_jsonapi_response(200, content=res)
 
-
+@login_required()
 @app.route("/add/<string:url_params>", methods=["POST"])
 def create_spot(spot_id: str):
-    pass
+    pass    
 
-
+@login_required()
 @app.route("/<int:spot_id>/<string:url_params>", methods=["PUT"])
 def update_spot(spot_id: str, url_params: str):
     pass
 
-
+@login_required()
 @app.route("/<int:spot_id>/<string:url_params>", methods=["DELETE"])
 def delete_spot(spot_id):
     pass
