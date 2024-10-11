@@ -74,6 +74,7 @@ jobs:
           echo "AUTH0_CLIENT_SECRET=${{ secrets.AUTH0_CLIENT_SECRET }}" >> .env
           echo "FLASK_SECRET_KEY=${{ secrets.AUTH_FLASK_SECRET_KEY }}" >> .env
           echo "GOOGLE_OAUTH_CLIENT_SECRET=${{ secrets.AUTH_GOOGLE_OAUTH_CLIENT_SECRET }}" >> .env
+          echo "GRPC_PORT=${{ vars.AUTH_GRPC_PORT }}" >> .env
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v2
