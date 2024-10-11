@@ -7,3 +7,4 @@ auth0-python~=4.7.0
 python-jose~=3.3
 grpcio~=1.66
 grpcio-tools~=1.66
+How-To-Sea-PyPackages==0.0.9

@@ -5,7 +5,7 @@ from src.db_client import SpotDB
 from src.search import search_with_geospatial, get_recommended_spots
 from src.utils import SEARCH_PARAMS_TYPE, typecast_query_params, create_jsonapi_response
 from flask_cors import CORS
-from auth import login_required
+from src.auth import login_required
 
 
 app = Flask(__name__)
