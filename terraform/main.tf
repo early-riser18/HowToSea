@@ -4,10 +4,6 @@ terraform {
       source  = "hashicorp/aws"
       version = "~> 5.0"
     }
-    auth0 = {
-      source  = "auth0/auth0"
-      version = "1.4.0"
-    }
   }
 }
 
@@ -279,6 +275,14 @@ resource "aws_security_group" "ecs_security_group" {
   }
 
   ingress {
+    # For GRPC Server
+    from_port   = 50051
+    to_port     = 50051
+    protocol    = "tcp"
+    cidr_blocks = ["10.0.0.0/16"]
+  }
+
+  ingress {
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
@@ -439,9 +443,4 @@ resource "aws_lambda_function_url" "lambda_api" {
 
 
 
-provider "auth0" {
-  domain        = "early-riser18.eu.auth0.com"
-  client_id     = var.AUTH0_CLIENT_ID
-  client_secret = var.AUTH0_CLIENT_SECRET
-  debug         = true
-}
+

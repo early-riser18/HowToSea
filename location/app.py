@@ -30,7 +30,6 @@ def catch_all_exception(e):
 
 
 @app.route("/")
-@login_required()
 def hello_world():
     return create_jsonapi_response(200)
 
@@ -106,10 +105,10 @@ def search():
 def get_recommendation():
     return create_jsonapi_response(200, get_recommended_spots())
 
-
-@app.route("/test")
+@login_required()
+@app.route("/is_logged_in", methods=["GET"])
 def test():
-    raise ValueError
+    return create_jsonapi_response(200, message="Logged in")
 
 
 if __name__ == "__main__":
