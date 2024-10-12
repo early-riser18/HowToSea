@@ -1,3 +1,6 @@
+# Intro
+Microservice for authentication and user identity management
+
 ```bash
 AUTH0_CLIENT_ID=yourClientId
 AUTH0_CLIENT_SECRET=yourClientSecret
