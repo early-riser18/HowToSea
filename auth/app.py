@@ -3,9 +3,10 @@ import json
 from flask import Flask, request, redirect, jsonify
 from src.utils import password_signup, password_login
 from src.oauth import OAuthJWT, Auth0ServiceProvider
-
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app)
 app.secret_key = environ.get("FLASK_SECRET_KEY")
 app.logger.setLevel("DEBUG")
 
