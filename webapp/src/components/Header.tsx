@@ -8,7 +8,7 @@ export default function Header(): JSX.Element {
           className="flex basis-full items-center justify-center md:justify-start"
           href="/"
         >
-          <img className="w-10" src="logo.png" />
+          <img className="w-10" src="/logo.png" />
           <p className="ml-4 font-header text-2xl font-bold text-primary">
             How To Sea
           </p>

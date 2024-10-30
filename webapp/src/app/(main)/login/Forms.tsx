@@ -1,18 +1,41 @@
 import { FormEvent } from "react";
-import { FormSubmissionStatus } from "../search/interface";
+import { FormSubmissionStatus } from "../../search/interface";
+
+function ErrorMessage({
+  errorCode,
+}: {
+  errorCode: number | null;
+}): JSX.Element {
+  const errorMessages = {
+    401: "Nom d'utilisateur ou mot de passe incorrect",
+    500: "Erreur serveur, veuillez réessayer plus tard",
+  };
+
+  return (
+    <>
+      <div className="text-red-500">
+        {errorCode ? errorMessages[errorCode] : ""}
+      </div>
+    </>
+  );
+}
+
+interface FormProps {
+  onSubmit: (e: FormEvent<HTMLFormElement>) => Promise<void>;
+  submissionStatus: FormSubmissionStatus;
+  errorCode: number | null;
+}
 
 export function LogInForm({
   onSubmit,
   submissionStatus,
-}: {
-  onSubmit: (e: FormEvent<HTMLFormElement>) => Promise<void>;
-  submissionStatus: FormSubmissionStatus;
-}): JSX.Element {
-  const is_submitting = submissionStatus === "submitting" ? true : false;
+  errorCode,
+}: FormProps): JSX.Element {
+  const is_submitting = submissionStatus === "submitting";
   return (
     <>
       <form onSubmit={onSubmit} className="w-full px-10">
-        <TextInput
+        <TextInputField
           type="text"
           label="Nom d'utilisateur"
           id="username"
@@ -20,7 +43,7 @@ export function LogInForm({
           minLength={5}
           disabled={is_submitting}
         />
-        <TextInput
+        <TextInputField
           type="password"
           label="Mot de passe"
           id="password"
@@ -28,9 +51,9 @@ export function LogInForm({
           minLength={5}
           disabled={is_submitting}
         />
-
+        <ErrorMessage errorCode={errorCode} />
         <button
-          className="mt-2 h-14 rounded-full bg-primary px-8 py-3 text-white transition-all hover:bg-blue-600 focus:outline-none focus:ring-4 focus:ring-blue-300 disabled:bg-[#4c80cd]"
+          className="mt-2 h-14 rounded-full bg-primary px-8 py-3 text-white hover:bg-blue-600 hover:transition-all focus:outline-none disabled:bg-[#4c80cd]"
           disabled={is_submitting}
         >
           Se connecter
@@ -43,16 +66,14 @@ export function LogInForm({
 export function SignUp({
   onSubmit,
   submissionStatus,
-}: {
-    onSubmit: (e: FormEvent<HTMLFormElement>) => Promise<void>;
-    submissionStatus: FormSubmissionStatus;
-}): JSX.Element {
+  errorCode,
+}: FormProps): JSX.Element {
   const is_submitting = submissionStatus === "submitting" ? true : false;
 
   return (
     <>
       <form onSubmit={onSubmit} className="w-full px-10">
-        <TextInput
+        <TextInputField
           type="text"
           label="Nom d'utilisateur"
           id="username"
@@ -60,7 +81,7 @@ export function SignUp({
           minLength={5}
           disabled={is_submitting}
         />
-        <TextInput
+        <TextInputField
           type="password"
           label="Mot de passe"
           id="password"
@@ -72,13 +93,13 @@ export function SignUp({
           className="mt-2 h-14 rounded-full bg-primary px-8 py-3 text-white transition-all hover:bg-blue-600 focus:outline-none focus:ring-4 focus:ring-blue-300 disabled:bg-[#4c80cd]"
           disabled={is_submitting}
         >
-         Créer un compte    
+          Créer un compte
         </button>
       </form>
     </>
   );
 }
-const TextInput = ({ type = "text", label, ...props }) => {
+const TextInputField = ({ type = "text", label, ...props }) => {
   return (
     <div className="mb-4">
       {label && (

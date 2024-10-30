@@ -1,5 +1,5 @@
 import { Inter } from "next/font/google";
-import "./globals.css";
+import "@/app/globals.css";
 import Header from "@/components/Header";
 const inter = Inter({ subsets: ["latin"] });
 import "@fortawesome/fontawesome-svg-core/styles.css";
