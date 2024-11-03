@@ -1,5 +1,5 @@
 "use client";
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { FormSubmissionStatus } from "@/app/(main)/search/interface";
 import { LogInResponse, Auth0Connection } from "@/interfaces/api";
 
@@ -11,15 +11,12 @@ export default function LoginPage(): JSX.Element {
   const [formType, setFormType] = useState<"login" | "signup">("login");
   const [errorCode, setErrorCode] = useState<number | null>(null);
   const router = useRouter();
-  async function logInUserOAuth() {
-    // should call server for oauth redirect, run redirect in new window etc
-    const options = {
-      method: "GET",
-    };
-    const endpoint = `${process.env.NEXT_PUBLIC_WEB_SERVER_URL}/auth/oauth/authorize?provider=auth0&connection=GOOGLE&redirect_uri=${process.env.NEXT_PUBLIC_WEB_APP_URL}/oauth-callback`;
 
-    window.location.href = endpoint
-  }
+  useEffect(() => {
+    if (window.localStorage.getItem("access_token")) {
+      router.push("/");
+    }
+  });
 
   async function logInUserWithPassword(
     loginCredentials: LogInFormInputs,
@@ -36,12 +33,13 @@ export default function LoginPage(): JSX.Element {
 
     try {
       const response = await fetch(endpoint, options);
-      //   if (response.ok) {
-      const data = await response.json();
-      return { status_code: response.status, body: data } as LogInResponse;
-      //   } else {
-      // return {status_code: response.status, body: res} as LogInResponse;
-      //   }
+      if (response.ok) {
+        const data = await response.json();
+        return { status_code: response.status, body: data } as LogInResponse;
+      } else {
+        const err = await response.text();
+        throw new Error(err);
+      }
     } catch (err) {
       throw new Error(`Fetch error: ${err}`);
     }
@@ -103,9 +101,10 @@ export default function LoginPage(): JSX.Element {
     }
   }
 
-  async function handleClickOAuth(provider: Auth0Connection) {
-    logInUserOAuth()
-}
+  async function handleClickOAuth(connection: Auth0Connection) {
+    const endpoint = `${process.env.NEXT_PUBLIC_WEB_SERVER_URL}/auth/oauth/authorize?provider=auth0&connection=${connection}&redirect_uri=${process.env.NEXT_PUBLIC_WEB_APP_URL}/oauth-callback`;
+    window.location.href = endpoint;
+  }
   return (
     <>
       <LoginWrapper
