@@ -90,12 +90,14 @@ class OAuthServiceProviderFactory:
 
 
 class Auth0ServiceProvider(OAuthServiceProvider):
-    def __init__(self):
+    def __init__(
+        self, redirect_uri: str = f"{environ.get('SERVICE_URL')}/oauth/callback"
+    ):
         super().__init__()
         self.authorization_url = f"https://{environ.get('AUTH0_DOMAIN')}/authorize"
         self.client_id = environ.get("AUTH0_CLIENT_ID")
         self.client_secret = environ.get("AUTH0_CLIENT_SECRET")
-        self.redirect_uri = f"{environ.get('SERVICE_URL')}/oauth/callback"
+        self.redirect_uri = redirect_uri
         self.token_url = f"https://{environ.get('AUTH0_DOMAIN')}/oauth/token"
 
     @property

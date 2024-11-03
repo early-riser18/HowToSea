@@ -1,4 +1,4 @@
-import { LevelOptions } from "@/app/utils/spotSearchOptions";
+import { LevelOptions } from "@/app/(main)/utils/spotSearchOptions";
 
 /*
 Interface for How-To-Sea API Response

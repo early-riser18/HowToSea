@@ -11,9 +11,16 @@ export default function LoginPage(): JSX.Element {
   const [formType, setFormType] = useState<"login" | "signup">("login");
   const [errorCode, setErrorCode] = useState<number | null>(null);
   const router = useRouter();
-async function logInUserOAuth() {
+  async function logInUserOAuth() {
     // should call server for oauth redirect, run redirect in new window etc
+    const options = {
+      method: "GET",
+    };
+    const endpoint = `${process.env.NEXT_PUBLIC_WEB_SERVER_URL}/auth/oauth/authorize?provider=auth0&connection=GOOGLE&redirect_uri=${process.env.NEXT_PUBLIC_WEB_APP_URL}/oauth-callback`;
+
+    window.location.href = endpoint
   }
+
   async function logInUserWithPassword(
     loginCredentials: LogInFormInputs,
   ): Promise<LogInResponse> {
@@ -96,15 +103,9 @@ async function logInUserOAuth() {
     }
   }
 
-  async function handleClickOAuth(provider : Auth0Connection) {
-    const options = {
-        method: "GET"
-      };
-      const endpoint = `${process.env.NEXT_PUBLIC_WEB_SERVER_URL}/auth/oauth/authorize?connection=${provider}&provider=auth0`;
-    
-      window.location.href = endpoint
-      
-  }
+  async function handleClickOAuth(provider: Auth0Connection) {
+    logInUserOAuth()
+}
   return (
     <>
       <LoginWrapper

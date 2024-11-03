@@ -1,9 +1,9 @@
 "use client";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
-import useSearchSpotForm from "@/app/utils/useSearchSpotForm";
-import PlaceAutocomplete from "@/app/utils/PlaceAutocomplete";
-import { levelOptions } from "@/app/utils/spotSearchOptions";
+import useSearchSpotForm from "@/app/(main)/utils/useSearchSpotForm";
+import PlaceAutocomplete from "@/app/(main)/utils/PlaceAutocomplete";
+import { levelOptions } from "@/app/(main)/utils/spotSearchOptions";
 
 export default function HomeSearchBar({ handleSubmit }): JSX.Element {
   const { placeField, onSubmit, onPlaceSelect, onChangePlaceField } =

@@ -78,6 +78,7 @@ def oauth_authorize():
 
     try:
         service_provider = request.args["provider"]
+        redirect_uri = request.args["redirect_uri"]
     except KeyError:
         return "Missing provider", 400
 
@@ -86,16 +87,16 @@ def oauth_authorize():
             connection = request.args["connection"]
         except KeyError:
             return "Missing connection", 400
-        oauth_authorization_url = Auth0ServiceProvider().get_authorization_url(
-            connection=connection
-        )
+        oauth_authorization_url = Auth0ServiceProvider(
+            redirect_uri=redirect_uri
+        ).get_authorization_url(connection=connection)
     else:
         return "Invalid provider", 400
 
     return redirect(oauth_authorization_url)
 
 
-@app.route("/oauth/callback")
+@app.route("/oauth/callback", methods=["GET"])
 def oauth_callback():
     """
     Handles the OAuth callback by processing the authorization code provided by the OAuth provider.
@@ -113,10 +114,12 @@ def oauth_callback():
     # # TODO: validate that the state is correct accross requests to prevent CSRF
     try:
         authorization_code = request.args["code"]
+        redirect_uri = request.args["redirect_uri"]
     except:
-        return "An error occured while authenticating", 500
-    unverified_token = Auth0ServiceProvider().retrieve_token(authorization_code)
-
+        return "Required parameters missing.", 400
+    unverified_token = Auth0ServiceProvider(redirect_uri=redirect_uri).retrieve_token(
+        authorization_code
+    )
     try:
         unverified_access_token = unverified_token["access_token"]
     except KeyError as e:
