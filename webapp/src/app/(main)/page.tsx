@@ -4,6 +4,7 @@ import SpotList from "@/components/_home_components/SpotList";
 import { APIProvider } from "@vis.gl/react-google-maps";
 import { useRouter } from "next/navigation";
 import { SearchRequestURLParams } from "@/app/(main)/search/interface";
+
 export default function HomePage(): JSX.Element {
   const router = useRouter();
 

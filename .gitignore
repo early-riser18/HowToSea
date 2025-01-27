@@ -8,3 +8,5 @@ __pycache__
 
 ## NGINX
 mock_letsencrypt/
+
+*.pem

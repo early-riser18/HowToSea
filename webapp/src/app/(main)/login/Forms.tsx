@@ -1,5 +1,5 @@
 import { FormEvent } from "react";
-import { FormSubmissionStatus } from "../../search/interface";
+import { FormSubmissionStatus } from "@/app/(main)/search/interface";
 
 function ErrorMessage({
   errorCode,

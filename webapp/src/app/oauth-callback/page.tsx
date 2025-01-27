@@ -1,4 +1,5 @@
 "use client";
+import { useUser } from "@/stores/userContext";
 import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
@@ -6,13 +7,13 @@ import { useEffect } from "react";
 export default function OAuthCallback(): void {
   const searchParams = useSearchParams();
   const router = useRouter();
+  const { setTokens } = useUser();
 
   useEffect(() => {
     const handleRequest = async () => {
       const code = searchParams.get("code");
       if (!code) {
-        router.push("/");
-        return;
+        throw new Error("Invalid parameters provided.");
       }
 
       const endpoint = `${process.env.NEXT_PUBLIC_WEB_SERVER_URL}/auth/oauth/callback?code=${code}&redirect_uri=${process.env.NEXT_PUBLIC_WEB_APP_URL}/oauth-callback`;
@@ -23,22 +24,28 @@ export default function OAuthCallback(): void {
         }
         await handleSuccess(response);
       } catch (error) {
-        handleFailure(error);
+        throw new Error(error);
       }
     };
 
-    handleRequest();
+    try {
+      handleRequest();
+    } catch (e) {
+      console.log(e);
+      router.push("/");
+    }
   }, [searchParams]);
 
   async function handleSuccess(response: Response) {
-      var data = await response.json();
-      console.log(data);
-      window.localStorage.setItem("access_token", data["access_token"])
-      router.push("/");
-  }
+    var data = await response.json();
+    console.log("OAuth Token received:", data);
+    const bearerTokens = {
+      access: data["access_token"],
+      refresh: null,
+    };
 
-  function handleFailure(response: Response) {
-    console.warn("An error occured while authenticating")
+    localStorage.setItem("bearerTokens", JSON.stringify(bearerTokens));
+    setTokens(bearerTokens);
     router.push("/");
-}
+  }
 }
